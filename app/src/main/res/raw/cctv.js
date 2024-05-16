@@ -33,7 +33,7 @@
                 clearInterval(interval);
                 setTimeout(function () {
                     console.log('success');
-                }, 0)
+                }, 500)
             }
         }, 10);
     });

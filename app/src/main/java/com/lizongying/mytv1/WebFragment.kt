@@ -37,7 +37,7 @@ class WebFragment : Fragment() {
     ): View {
         webView = WebView(requireContext())
         webView.settings.javaScriptEnabled = true
-        webView.settings.domStorageEnabled = true
+//        webView.settings.domStorageEnabled = true
         webView.settings.databaseEnabled = true
         webView.settings.javaScriptCanOpenWindowsAutomatically = true
         webView.settings.mediaPlaybackRequiresUserGesture = false
@@ -68,10 +68,10 @@ class WebFragment : Fragment() {
         webView.webChromeClient = object : WebChromeClient() {
             override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
                 if (consoleMessage != null) {
-                    Log.e(
-                        "WebViewConsole",
-                        "Message: ${consoleMessage.message()}, Source: ${consoleMessage.sourceId()}, Line: ${consoleMessage.lineNumber()}"
-                    )
+//                    Log.e(
+//                        "WebViewConsole",
+//                        "Message: ${consoleMessage.message()}, Source: ${consoleMessage.sourceId()}, Line: ${consoleMessage.lineNumber()}"
+//                    )
 
                     if (consoleMessage.message() == "success") {
                         Log.e(TAG, "success")
@@ -114,7 +114,7 @@ class WebFragment : Fragment() {
                     return WebResourceResponse("text/plain", "utf-8", null)
                 }
 
-                Log.i(TAG, "${request?.method} ${uri.toString()} ${request?.requestHeaders}")
+//                Log.i(TAG, "${request?.method} ${uri.toString()} ${request?.requestHeaders}")
                 return null
             }
 
@@ -188,12 +188,20 @@ class WebFragment : Fragment() {
         val uri = Uri.parse(url)
         Log.e(TAG, "uri ${uri.host}")
         when (uri.host) {
-            "tv.cctv.com" -> webView.evaluateJavascript(
-                "localStorage.setItem('cctv_live_resolution', '720');",
-                null
-            )
+            "tv.cctv.com" -> {
+                webView.evaluateJavascript(
+                    "localStorage.setItem('cctv_live_resolution', '720');",
+                    null
+                )
+                webView.loadUrl(url)
+            }
 
-            "www.gdtv.cn" -> {}
+            "www.gdtv.cn" -> {
+                webView.loadUrl(url)
+            }
+
+            "www.yangshipin.cn" -> {
+            }
         }
         webView.loadUrl(url)
     }

@@ -1,5 +1,7 @@
 (function () {
     return new Promise(function (resolve, reject) {
+//        window.location.reload(true);
+
         const divElement = document.createElement('div');
         divElement.style.position = 'fixed';
         divElement.style.top = '0';
@@ -29,7 +31,7 @@
                 clearInterval(interval);
                 setTimeout(function () {
                     console.log('success');
-                }, 0)
+                }, 1000)
             }
         }, 10);
     });
