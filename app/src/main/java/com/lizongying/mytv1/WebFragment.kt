@@ -16,6 +16,8 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.fragment.app.Fragment
+import com.lizongying.mytv1.databinding.InfoBinding
+import com.lizongying.mytv1.databinding.PlayerBinding
 import com.lizongying.mytv1.models.TVModel
 
 
@@ -26,6 +28,9 @@ class WebFragment : Fragment() {
 
     private var tvModel: TVModel? = null
 
+    private var _binding: PlayerBinding? = null
+    private val binding get() = _binding!!
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         mainActivity = activity as MainActivity
         super.onActivityCreated(savedInstanceState)
@@ -35,7 +40,15 @@ class WebFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        webView = WebView(requireContext())
+        _binding = PlayerBinding.inflate(inflater, container, false)
+
+        webView = binding.webView
+
+        val application = requireActivity().applicationContext as MyTVApplication
+
+        webView.layoutParams.width = application.shouldWidthPx()
+        webView.layoutParams.height = application.shouldHeightPx()
+
         webView.settings.javaScriptEnabled = true
 //        webView.settings.domStorageEnabled = true
         webView.settings.databaseEnabled = true
@@ -58,7 +71,7 @@ class WebFragment : Fragment() {
         }
 
         (activity as MainActivity).ready(TAG)
-        return webView
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -68,10 +81,10 @@ class WebFragment : Fragment() {
         webView.webChromeClient = object : WebChromeClient() {
             override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
                 if (consoleMessage != null) {
-//                    Log.e(
-//                        "WebViewConsole",
-//                        "Message: ${consoleMessage.message()}, Source: ${consoleMessage.sourceId()}, Line: ${consoleMessage.lineNumber()}"
-//                    )
+                    Log.e(
+                        "WebViewConsole",
+                        "Message: ${consoleMessage.message()}, Source: ${consoleMessage.sourceId()}, Line: ${consoleMessage.lineNumber()}"
+                    )
 
                     if (consoleMessage.message() == "success") {
                         Log.e(TAG, "success")
@@ -101,7 +114,7 @@ class WebFragment : Fragment() {
                     ) == true || uri?.path?.endsWith(
                         ".gif"
                     ) == true || uri?.path?.endsWith(
-                        ".csss"
+                        ".css"
                     ) == true)
                 ) {
                     return WebResourceResponse("text/plain", "utf-8", null)
@@ -113,7 +126,6 @@ class WebFragment : Fragment() {
                 ) {
                     return WebResourceResponse("text/plain", "utf-8", null)
                 }
-
 //                Log.i(TAG, "${request?.method} ${uri.toString()} ${request?.requestHeaders}")
                 return null
             }

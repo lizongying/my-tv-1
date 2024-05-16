@@ -10,14 +10,13 @@
         divElement.style.zIndex = '9998';
         document.body.appendChild(divElement);
 
-        const height = document.documentElement.clientHeight;
         const interval = setInterval(() => {
             const video = document.querySelector('video');
             if (video !== null) {
                 video.style.objectFit = 'contain';
                 video.style.position = 'fixed';
-                video.style.width = height * 16 / 9 + 'px';
-                video.style.height = height + 'px';
+                video.style.width = "100vw";
+                video.style.height = "100vh";
                 video.style.top = '0';
                 video.style.left = '0';
                 video.style.zIndex = '9999';
