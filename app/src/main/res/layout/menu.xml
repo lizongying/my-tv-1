@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/menu"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:clickable="true"
+    android:focusable="false"
+    >
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/group"
+            android:layout_width="150dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="1dp"
+            android:padding="10dp"
+            android:background="#FF263238">
+        </androidx.recyclerview.widget.RecyclerView>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/list"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            >
+        </androidx.recyclerview.widget.RecyclerView>
+
+</LinearLayout>

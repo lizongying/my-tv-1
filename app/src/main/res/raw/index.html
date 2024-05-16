@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta
+                name="viewport"
+                content="width=device-width, initial-scale=1.0">
+        <title>我的电视·一</title>
+        <style>
+            body {
+                height: 100vh;
+                margin: 0;
+                padding: 1rem;
+            }
+
+            body h2 {
+                margin-top: .5rem;
+            }
+            hr {
+               margin-top: .5rem;
+               margin-bottom: .5rem;
+            }
+            .container h4 {
+                margin-top: .5rem;
+            }
+            .message {
+                border: 1px solid #ccc;
+                line-height: 1.5rem;
+            }
+            .inline-box {
+                width: 20rem;
+                display: inline-block;
+            }
+            .uri {
+                width: 16rem;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>我的电视·一</h1>
+        <hr />
+        <div class="inline-box">视频源地址，确认后保存：</div>
+        <div class="inline-box">
+            <input type="text" id="uri" style="width: 16rem;"/>
+            <input type="button" id="ok" value="确认"/>
+        </div>
+        <hr />
+        <div class="inline-box">选择视频源文件后会自动上传保存：</div>
+        <div class="inline-box">
+            <input type="file" id="input" multiple />
+        </div>
+        <hr />
+        <h2>格式支持json:</h2>
+        <div class="container">
+            <h4>json</h4>
+            <div class="message">
+                <pre>[
+    {
+        "group": "组名",
+        "logo": "图标",
+        "name": "标准标题",
+        "title": "标题",
+        "uris": [
+            "视频地址"
+        ]
+    }
+]
+                </pre>
+            </div>
+        </div>
+    </body>
+    <script>
+        const input = document.getElementById('input');
+
+        input.onchange = function (e) {
+            handleFiles(e.target.files)
+        }
+
+        const handleFiles = async function (files) {
+            for (let i = 0; i < files.length; i++) {
+                await read(files[i]);
+            }
+        }
+
+        const read = async (file) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                sendFile(e.target.result);
+            };
+            reader.readAsText(file);
+        }
+
+        const sendFile = async (body) => {
+            const response = await fetch('/api/channels', {
+                method: 'POST',
+                body: body
+            });
+            const json = await response.text();
+            console.log(json);
+        }
+
+        document.getElementById('ok').onclick = () => {
+            const uri = document.getElementById('uri').value.trim();
+            if (uri.length > 0) {
+                save(JSON.stringify({
+                    uri: uri
+                }))
+            }
+        }
+        const save = async (body) => {
+            const response = await fetch('/api/uri', {
+                method: 'POST',
+                body: body
+            });
+            const json = await response.text();
+            console.log(json);
+        }
+    </script>
+</html>
