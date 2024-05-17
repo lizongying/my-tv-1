@@ -1,5 +1,6 @@
 package com.lizongying.mytv1
 
+import android.graphics.Bitmap
 import android.net.Uri
 import android.net.http.SslError
 import android.os.Bundle
@@ -16,7 +17,6 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.fragment.app.Fragment
-import com.lizongying.mytv1.databinding.InfoBinding
 import com.lizongying.mytv1.databinding.PlayerBinding
 import com.lizongying.mytv1.models.TVModel
 
@@ -79,6 +79,10 @@ class WebFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         webView.webChromeClient = object : WebChromeClient() {
+            override fun getDefaultVideoPoster(): Bitmap {
+                return Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
+            }
+
             override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
                 if (consoleMessage != null) {
                     Log.e(
@@ -182,10 +186,28 @@ class WebFragment : Fragment() {
                             }
                         }
                     }
+
+                    "www.sztv.com.cn" -> {
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.sztv)
+                            .bufferedReader()
+                            .use { it.readText() }) { value ->
+                            if (value == "success") {
+                                Log.e(TAG, "success")
+                            }
+                        }
+                    }
+                    "news.hbtv.com.cn" -> {
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.hbtv)
+                            .bufferedReader()
+                            .use { it.readText() }) { value ->
+                            if (value == "success") {
+                                Log.e(TAG, "success")
+                            }
+                        }
+                    }
                 }
             }
         }
-//        var url =  "https://www.yangshipin.cn/#/tv/home?pid=600002513"
     }
 
     fun play(tvModel: TVModel) {
@@ -205,11 +227,9 @@ class WebFragment : Fragment() {
                     "localStorage.setItem('cctv_live_resolution', '720');",
                     null
                 )
-                webView.loadUrl(url)
             }
 
             "www.gdtv.cn" -> {
-                webView.loadUrl(url)
             }
 
             "www.yangshipin.cn" -> {

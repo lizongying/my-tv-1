@@ -10,9 +10,11 @@
         divElement.style.zIndex = '9998';
         document.body.appendChild(divElement);
 
+        const count = 0;
         const interval = setInterval(() => {
             const video = document.querySelector('video');
             if (video !== null) {
+                video.attributes.controls = 'false';
                 video.style.objectFit = 'contain';
                 video.style.position = 'fixed';
                 video.style.width = "100vw";
@@ -29,6 +31,11 @@
                 setTimeout(function () {
                     console.log('success');
                 }, 0)
+            }
+            count ++;
+            if (count > 6 * 1000) {
+                clearInterval(interval);
+                console.log('timeout');
             }
         }, 10);
     });

@@ -5,9 +5,11 @@
         body.style.left = '100%';
         body.style.backgroundColor = '#000';
 
+        const count = 0;
         const interval = setInterval(() => {
             const video = document.querySelector('video');
             if (video !== null) {
+                video.attributes.controls = 'false';
                 video.style.objectFit = 'contain';
                 video.style.position = 'fixed';
                 video.style.width = "100vw";
@@ -23,7 +25,12 @@
                 clearInterval(interval);
                 setTimeout(function () {
                     console.log('success');
-                }, 500)
+                }, 0)
+            }
+            count ++;
+            if (count > 6 * 1000) {
+                clearInterval(interval);
+                console.log('timeout');
             }
         }, 10);
     });
