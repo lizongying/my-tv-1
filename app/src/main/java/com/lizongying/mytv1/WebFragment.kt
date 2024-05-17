@@ -50,7 +50,7 @@ class WebFragment : Fragment() {
         webView.layoutParams.height = application.shouldHeightPx()
 
         webView.settings.javaScriptEnabled = true
-//        webView.settings.domStorageEnabled = true
+        webView.settings.domStorageEnabled = true
         webView.settings.databaseEnabled = true
         webView.settings.javaScriptCanOpenWindowsAutomatically = true
         webView.settings.mediaPlaybackRequiresUserGesture = false
@@ -85,10 +85,10 @@ class WebFragment : Fragment() {
 
             override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
                 if (consoleMessage != null) {
-                    Log.e(
-                        "WebViewConsole",
-                        "Message: ${consoleMessage.message()}, Source: ${consoleMessage.sourceId()}, Line: ${consoleMessage.lineNumber()}"
-                    )
+//                    Log.e(
+//                        "WebViewConsole",
+//                        "Message: ${consoleMessage.message()}, Source: ${consoleMessage.sourceId()}, Line: ${consoleMessage.lineNumber()}"
+//                    )
 
                     if (consoleMessage.message() == "success") {
                         Log.e(TAG, "success")
@@ -139,7 +139,7 @@ class WebFragment : Fragment() {
                 val uri = Uri.parse(url)
                 Log.e(TAG, "uri ${uri.host}")
                 when (uri.host) {
-                    "tv.cctv.com" -> webView.evaluateJavascript(context.resources.openRawResource(R.raw.cctv)
+                    "tv.cctv.com" -> webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
                         .bufferedReader()
                         .use { it.readText() }) { value ->
                         if (value == "success") {
@@ -148,7 +148,7 @@ class WebFragment : Fragment() {
                     }
 
                     "www.gdtv.cn" -> {
-                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.gdtv)
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
                             .bufferedReader()
                             .use { it.readText() }) { value ->
                             if (value == "success") {
@@ -158,7 +158,7 @@ class WebFragment : Fragment() {
                     }
 
                     "www.setv.sh.cn" -> {
-                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.setv)
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.gdtv)
                             .bufferedReader()
                             .use { it.readText() }) { value ->
                             if (value == "success") {
@@ -168,7 +168,7 @@ class WebFragment : Fragment() {
                     }
 
                     "live.kankanews.com" -> {
-                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.setv)
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.gdtv)
                             .bufferedReader()
                             .use { it.readText() }) { value ->
                             if (value == "success") {
@@ -188,7 +188,7 @@ class WebFragment : Fragment() {
                     }
 
                     "www.sztv.com.cn" -> {
-                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.sztv)
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
                             .bufferedReader()
                             .use { it.readText() }) { value ->
                             if (value == "success") {
@@ -196,8 +196,136 @@ class WebFragment : Fragment() {
                             }
                         }
                     }
+
                     "news.hbtv.com.cn" -> {
-                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.hbtv)
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
+                            .bufferedReader()
+                            .use { it.readText() }) { value ->
+                            if (value == "success") {
+                                Log.e(TAG, "success")
+                            }
+                        }
+                    }
+//                    "www.ahtv.cn" -> {
+//                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
+//                            .bufferedReader()
+//                            .use { it.readText() }) { value ->
+//                            if (value == "success") {
+//                                Log.e(TAG, "success")
+//                            }
+//                        }
+//                    }
+                    "www.nxtv.com.cn" -> {
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
+                            .bufferedReader()
+                            .use { it.readText() }) { value ->
+                            if (value == "success") {
+                                Log.e(TAG, "success")
+                            }
+                        }
+                    }
+
+                    "tv.gxtv.cn" -> {
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
+                            .bufferedReader()
+                            .use { it.readText() }) { value ->
+                            if (value == "success") {
+                                Log.e(TAG, "success")
+                            }
+                        }
+                    }
+
+                    "live.fjtv.net" -> {
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
+                            .bufferedReader()
+                            .use { it.readText() }) { value ->
+                            if (value == "success") {
+                                Log.e(TAG, "success")
+                            }
+                        }
+                    }
+
+                    "tc.hnntv.cn" -> {
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
+                            .bufferedReader()
+                            .use { it.readText() }) { value ->
+                            if (value == "success") {
+                                Log.e(TAG, "success")
+                            }
+                        }
+                    }
+
+                    "www.hebtv.com" -> {
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
+                            .bufferedReader()
+                            .use { it.readText() }) { value ->
+                            if (value == "success") {
+                                Log.e(TAG, "success")
+                            }
+                        }
+                    }
+
+                    "live.mgtv.com" -> {
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
+                            .bufferedReader()
+                            .use { it.readText() }) { value ->
+                            if (value == "success") {
+                                Log.e(TAG, "success")
+                            }
+                        }
+                    }
+
+                    "www.hnntv.cn" -> {
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
+                            .bufferedReader()
+                            .use { it.readText() }) { value ->
+                            if (value == "success") {
+                                Log.e(TAG, "success")
+                            }
+                        }
+                    }
+
+                    "news.hbtv.com.cn" -> {
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
+                            .bufferedReader()
+                            .use { it.readText() }) { value ->
+                            if (value == "success") {
+                                Log.e(TAG, "success")
+                            }
+                        }
+                    }
+
+                    "www.jxntv.cn" -> {
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
+                            .bufferedReader()
+                            .use { it.readText() }) { value ->
+                            if (value == "success") {
+                                Log.e(TAG, "success")
+                            }
+                        }
+                    }
+
+                    "www.gzstv.com" -> {
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
+                            .bufferedReader()
+                            .use { it.readText() }) { value ->
+                            if (value == "success") {
+                                Log.e(TAG, "success")
+                            }
+                        }
+                    }
+
+                    "www.cztv.com" -> {
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
+                            .bufferedReader()
+                            .use { it.readText() }) { value ->
+                            if (value == "success") {
+                                Log.e(TAG, "success")
+                            }
+                        }
+                    }
+                    "www.jlntv.cn" -> {
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
                             .bufferedReader()
                             .use { it.readText() }) { value ->
                             if (value == "success") {
@@ -217,7 +345,7 @@ class WebFragment : Fragment() {
 //        }
 
         this.tvModel = tvModel
-        val url = tvModel.videoUrl.value as String
+        var url = tvModel.videoUrl.value as String
         Log.i(TAG, "play ${tvModel.tv.title} $url")
         val uri = Uri.parse(url)
         Log.e(TAG, "uri ${uri.host}")
@@ -235,6 +363,7 @@ class WebFragment : Fragment() {
             "www.yangshipin.cn" -> {
             }
         }
+//        url = "https://news.hbtv.com.cn/app/tv/434"
         webView.loadUrl(url)
     }
 
