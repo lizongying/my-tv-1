@@ -33,7 +33,11 @@ object SP {
 
     private const val KEY_LIKE = "like"
 
+    const val KEY_EPG = "epg"
+
     private lateinit var sp: SharedPreferences
+
+    private var listener: OnSharedPreferenceChangeListener? = null
 
     /**
      * The method must be invoked as early as possible(At least before using the keys)
@@ -43,6 +47,10 @@ object SP {
             context.resources.getString(R.string.app_name),
             Context.MODE_PRIVATE
         )
+    }
+
+    fun setOnSharedPreferenceChangeListener(listener: OnSharedPreferenceChangeListener) {
+        this.listener = listener
     }
 
     var channelReversal: Boolean
@@ -108,4 +116,13 @@ object SP {
     fun deleteLike() {
         sp.edit().remove(KEY_LIKE).apply()
     }
+
+    var epg: String?
+        get() = sp.getString(KEY_EPG, "")
+        set(value)  {
+            if (value != this.epg) {
+                sp.edit().putString(KEY_EPG, value).apply()
+                listener?.onSharedPreferenceChanged(KEY_EPG)
+            }
+        }
 }

@@ -6,12 +6,14 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.drawable.BitmapDrawable
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.FOCUS_BEFORE_DESCENDANTS
 import android.view.ViewGroup.FOCUS_BLOCK_DESCENDANTS
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.core.view.marginStart
 import androidx.core.view.setPadding
@@ -180,7 +182,12 @@ class ListAdapter(
     override fun getItemCount() = tvListModel.size()
 
     class ViewHolder(private val context: Context, val binding: ListItemBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+        RecyclerView.ViewHolder(binding.root), OnSharedPreferenceChangeListener {
+
+        init {
+            SP.setOnSharedPreferenceChangeListener(this)
+        }
+
         fun bindTitle(text: String) {
             binding.title.text = text
         }
@@ -249,6 +256,35 @@ class ListAdapter(
                         R.drawable.ic_heart_empty
                     )
                 )
+            }
+        }
+
+        override fun onSharedPreferenceChanged(key: String) {
+            Log.i(TAG, "$key changed")
+            when (key) {
+                SP.KEY_EPG -> {
+                    if (SP.epg.isNullOrEmpty()) {
+                        val constraintSet = ConstraintSet()
+                        constraintSet.clone(binding.root)
+
+                        constraintSet.connect(binding.title.id, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
+                        constraintSet.connect(binding.heart.id, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
+
+                        constraintSet.applyTo(binding.root)
+
+                        binding.description.visibility = View.GONE
+                    } else {
+                        val constraintSet = ConstraintSet()
+                        constraintSet.clone(binding.root)
+
+                        constraintSet.clear(binding.title.id, ConstraintSet.BOTTOM)
+                        constraintSet.clear(binding.heart.id, ConstraintSet.BOTTOM)
+
+                        constraintSet.applyTo(binding.root)
+
+                        binding.description.visibility = View.VISIBLE
+                    }
+                }
             }
         }
     }

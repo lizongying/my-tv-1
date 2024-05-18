@@ -324,7 +324,88 @@ class WebFragment : Fragment() {
                             }
                         }
                     }
+
                     "www.jlntv.cn" -> {
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
+                            .bufferedReader()
+                            .use { it.readText() }) { value ->
+                            if (value == "success") {
+                                Log.e(TAG, "success")
+                            }
+                        }
+                    }
+
+                    "v.iqilu.com" -> {
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
+                            .bufferedReader()
+                            .use { it.readText() }) { value ->
+                            if (value == "success") {
+                                Log.e(TAG, "success")
+                            }
+                        }
+                    }
+
+                    "www.qhbtv.com" -> {
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
+                            .bufferedReader()
+                            .use { it.readText() }) { value ->
+                            if (value == "success") {
+                                Log.e(TAG, "success")
+                            }
+                        }
+                    }
+
+                    "www.qhtb.cn" -> {
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
+                            .bufferedReader()
+                            .use { it.readText() }) { value ->
+                            if (value == "success") {
+                                Log.e(TAG, "success")
+                            }
+                        }
+                    }
+
+                    "www.hljtv.com" -> {
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
+                            .bufferedReader()
+                            .use { it.readText() }) { value ->
+                            if (value == "success") {
+                                Log.e(TAG, "success")
+                            }
+                        }
+                    }
+
+                    "static.hntv.tv" -> {
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
+                            .bufferedReader()
+                            .use { it.readText() }) { value ->
+                            if (value == "success") {
+                                Log.e(TAG, "success")
+                            }
+                        }
+                    }
+
+                    "www.btzx.com.cn" -> {
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
+                            .bufferedReader()
+                            .use { it.readText() }) { value ->
+                            if (value == "success") {
+                                Log.e(TAG, "success")
+                            }
+                        }
+                    }
+
+                    "live.snrtv.com" -> {
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
+                            .bufferedReader()
+                            .use { it.readText() }) { value ->
+                            if (value == "success") {
+                                Log.e(TAG, "success")
+                            }
+                        }
+                    }
+
+                    "www.snrtv.com" -> {
                         webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
                             .bufferedReader()
                             .use { it.readText() }) { value ->
@@ -356,14 +437,8 @@ class WebFragment : Fragment() {
                     null
                 )
             }
-
-            "www.gdtv.cn" -> {
-            }
-
-            "www.yangshipin.cn" -> {
-            }
         }
-//        url = "https://news.hbtv.com.cn/app/tv/434"
+//        url = "http://live.snrtv.com/star"
         webView.loadUrl(url)
     }
 

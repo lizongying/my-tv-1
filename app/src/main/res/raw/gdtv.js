@@ -14,6 +14,8 @@
         const interval = setInterval(() => {
             const video = document.querySelector('video');
             if (video !== null) {
+                video.attributes.autoplay = 'true';
+                video.attributes.muted = 'false';
                 video.attributes.controls = 'false';
                 video.style.objectFit = 'contain';
                 video.style.position = 'fixed';

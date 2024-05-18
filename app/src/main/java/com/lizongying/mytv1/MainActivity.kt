@@ -290,7 +290,7 @@ class MainActivity : FragmentActivity() {
     }
 
     fun onPlayEnd() {
-        val tvModel = TVList.getTVModel()
+        val tvModel = TVList.getTVModel()!!
         if (SP.repeatInfo) {
             infoFragment.show(tvModel)
             if (SP.channelNum) {
@@ -300,10 +300,10 @@ class MainActivity : FragmentActivity() {
     }
 
     fun play(position: Int) {
-        val prevGroup = TVList.getTVModel().groupIndex
+        val prevGroup = TVList.getTVModel()!!.groupIndex
         if (position > -1 && position < TVList.size()) {
             TVList.setPosition(position)
-            val currentGroup = TVList.getTVModel().groupIndex
+            val currentGroup = TVList.getTVModel()!!.groupIndex
             if (currentGroup != prevGroup) {
                 Log.i(TAG, "group change")
                 menuFragment.updateList(currentGroup)
@@ -314,13 +314,13 @@ class MainActivity : FragmentActivity() {
     }
 
     fun prev() {
-        val prevGroup = TVList.getTVModel().groupIndex
+        val prevGroup = TVList.getTVModel()!!.groupIndex
         var position = TVList.position.value?.dec() ?: 0
         if (position == -1) {
             position = TVList.size() - 1
         }
         TVList.setPosition(position)
-        val currentGroup = TVList.getTVModel().groupIndex
+        val currentGroup = TVList.getTVModel()!!.groupIndex
         if (currentGroup != prevGroup) {
             Log.i(TAG, "group change")
             menuFragment.updateList(currentGroup)
@@ -328,13 +328,13 @@ class MainActivity : FragmentActivity() {
     }
 
     fun next() {
-        val prevGroup = TVList.getTVModel().groupIndex
+        val prevGroup = TVList.getTVModel()!!.groupIndex
         var position = TVList.position.value?.inc() ?: 0
         if (position == TVList.size()) {
             position = 0
         }
         TVList.setPosition(position)
-        val currentGroup = TVList.getTVModel().groupIndex
+        val currentGroup = TVList.getTVModel()!!.groupIndex
         if (currentGroup != prevGroup) {
             Log.i(TAG, "group change")
             menuFragment.updateList(currentGroup)
@@ -570,7 +570,7 @@ class MainActivity : FragmentActivity() {
             }
 
             KeyEvent.KEYCODE_UNKNOWN -> {
-                showSetting()
+//                showSetting()
                 return true
             }
 

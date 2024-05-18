@@ -132,15 +132,15 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
                 binding.group.visibility = GONE
                 groupAdapter.focusable(false)
                 listAdapter.focusable(true)
-                listAdapter.toPosition(TVList.getTVModel().listIndex)
+                listAdapter.toPosition(TVList.getTVModel()!!.listIndex)
 
 
-                if (TVList.getTVModel().groupIndex == TVList.groupModel.position.value!!) {
+                if (TVList.getTVModel()!!.groupIndex == TVList.groupModel.position.value!!) {
                     Log.i(
                         TAG,
-                        "list on show toPosition ${TVList.getTVModel().tv.title} ${TVList.getTVModel().listIndex}/${listAdapter.tvListModel.size()}"
+                        "list on show toPosition ${TVList.getTVModel()!!.tv.title} ${TVList.getTVModel()!!.listIndex}/${listAdapter.tvListModel.size()}"
                     )
-                    listAdapter.toPosition(TVList.getTVModel().listIndex)
+                    listAdapter.toPosition(TVList.getTVModel()!!.listIndex)
                 } else {
                     listAdapter.toPosition(0)
                 }
@@ -148,7 +148,7 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
             }
 
             KeyEvent.KEYCODE_DPAD_LEFT -> {
-                (activity as MainActivity).hideMenuFragment()
+//                (activity as MainActivity).hideMenuFragment()
                 return true
             }
         }
@@ -191,22 +191,22 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
 //                    listAdapter.focusable(true)
 //                }
 
-                val groupIndex = TVList.getTVModel().groupIndex
+                val groupIndex = TVList.getTVModel()!!.groupIndex
                 Log.i(
                     TAG,
                     "groupIndex $groupIndex ${TVList.groupModel.position.value!!}"
                 )
 
                 if (groupIndex == TVList.groupModel.position.value!!) {
-                    if (listAdapter.tvListModel.getIndex() != TVList.getTVModel().groupIndex) {
+                    if (listAdapter.tvListModel.getIndex() != TVList.getTVModel()!!.groupIndex) {
                         updateList(groupIndex)
                     }
 
                     Log.i(
                         TAG,
-                        "list on show toPosition ${TVList.getTVModel().tv.title} ${TVList.getTVModel().listIndex}/${listAdapter.tvListModel.size()}"
+                        "list on show toPosition ${TVList.getTVModel()!!.tv.title} ${TVList.getTVModel()!!.listIndex}/${listAdapter.tvListModel.size()}"
                     )
-                    listAdapter.toPosition(TVList.getTVModel().listIndex)
+                    listAdapter.toPosition(TVList.getTVModel()!!.listIndex)
                 } else {
                     listAdapter.toPosition(0)
                 }

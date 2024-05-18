@@ -44,7 +44,7 @@ object TVList {
             file.readText()
         } else {
             Log.i(TAG, "read resource")
-            context.resources.openRawResource(R.raw.channels).bufferedReader()
+            context.resources.openRawResource(R.raw.channels).bufferedReader(Charsets.UTF_8)
                 .use { it.readText() }
         }
 
@@ -196,11 +196,14 @@ object TVList {
         return true
     }
 
-    fun getTVModel(): TVModel {
+    fun getTVModel(): TVModel? {
         return getTVModel(position.value!!)
     }
 
-    private fun getTVModel(idx: Int): TVModel {
+    fun getTVModel(idx: Int): TVModel? {
+        if (idx >= size()) {
+            return null
+        }
         return listModel[idx]
     }
 
@@ -217,7 +220,7 @@ object TVList {
         val tvModel = getTVModel(position)
 
         // set a new position or retry when position same
-        tvModel.setReady()
+        tvModel!!.setReady()
 
         groupModel.setPosition(tvModel.groupIndex)
 
