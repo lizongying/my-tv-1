@@ -113,6 +113,32 @@ class WebFragment : Fragment() {
                 request: WebResourceRequest?
             ): WebResourceResponse? {
                 val uri = request?.url
+                if (uri?.host == "www.nmtv.cn" && uri.path?.endsWith(
+                        ".css"
+                    ) == true
+                ) {
+                    return null
+                }
+                if ((uri?.host == "www.btzx.com.cn"
+                            || uri?.host == "g.cbg.cn"
+                            || uri?.host == "www.ahtv.cn"
+//                            || uri?.host == "mapi.ahtv.cn"
+//                            || uri?.host == "live.kankanews.com"
+//                            || uri?.host == "skin.kankanews.com"
+
+                            ) && uri.path?.endsWith(
+                        ".css"
+                    ) == true
+                ) {
+                    return null
+                }
+//                if (uri?.host == "www.xjtvs.com.cn" && uri.path?.endsWith(
+//                        ".css"
+//                    ) == true
+//                ) {
+//                    return null
+//                }
+
                 if (request?.isForMainFrame == false && (uri?.path?.endsWith(".jpg") == true || uri?.path?.endsWith(
                         ".png"
                     ) == true || uri?.path?.endsWith(
@@ -158,16 +184,6 @@ class WebFragment : Fragment() {
                     }
 
                     "www.setv.sh.cn" -> {
-                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.gdtv)
-                            .bufferedReader()
-                            .use { it.readText() }) { value ->
-                            if (value == "success") {
-                                Log.e(TAG, "success")
-                            }
-                        }
-                    }
-
-                    "live.kankanews.com" -> {
                         webView.evaluateJavascript(context.resources.openRawResource(R.raw.gdtv)
                             .bufferedReader()
                             .use { it.readText() }) { value ->
@@ -296,7 +312,7 @@ class WebFragment : Fragment() {
                     }
 
                     "www.jxntv.cn" -> {
-                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.jxtv)
                             .bufferedReader()
                             .use { it.readText() }) { value ->
                             if (value == "success") {
@@ -335,15 +351,15 @@ class WebFragment : Fragment() {
                         }
                     }
 
-                    "v.iqilu.com" -> {
-                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
-                            .bufferedReader()
-                            .use { it.readText() }) { value ->
-                            if (value == "success") {
-                                Log.e(TAG, "success")
-                            }
-                        }
-                    }
+//                    "v.iqilu.com" -> {
+//                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
+//                            .bufferedReader()
+//                            .use { it.readText() }) { value ->
+//                            if (value == "success") {
+//                                Log.e(TAG, "success")
+//                            }
+//                        }
+//                    }
 
                     "www.qhbtv.com" -> {
                         webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
@@ -405,8 +421,78 @@ class WebFragment : Fragment() {
                         }
                     }
 
-                    "www.snrtv.com" -> {
+//                    "www.snrtv.com" -> {
+//                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
+//                            .bufferedReader()
+//                            .use { it.readText() }) { value ->
+//                            if (value == "success") {
+//                                Log.e(TAG, "success")
+//                            }
+//                        }
+//                    }
+
+                    "www.nmtv.cn" -> {
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.nmgtv)
+                            .bufferedReader()
+                            .use { it.readText() }) { value ->
+                            if (value == "success") {
+                                Log.e(TAG, "success")
+                            }
+                        }
+                    }
+
+                    "www.yntv.cn" -> {
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.yntv)
+                            .bufferedReader()
+                            .use { it.readText() }) { value ->
+                            if (value == "success") {
+                                Log.e(TAG, "success")
+                            }
+                        }
+                    }
+
+                    "www.yb983.com" -> {
                         webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
+                            .bufferedReader()
+                            .use { it.readText() }) { value ->
+                            if (value == "success") {
+                                Log.e(TAG, "success")
+                            }
+                        }
+                    }
+
+                    "www.xjtvs.com.cn" -> {
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.xjtv)
+                            .bufferedReader()
+                            .use { it.readText() }) { value ->
+                            if (value == "success") {
+                                Log.e(TAG, "success")
+                            }
+                        }
+                    }
+
+                    "www.sxrtv.com" -> {
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.sxrtv)
+                            .bufferedReader()
+                            .use { it.readText() }) { value ->
+                            if (value == "success") {
+                                Log.e(TAG, "success")
+                            }
+                        }
+                    }
+
+                    "www.cbg.cn" -> {
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.cqtv)
+                            .bufferedReader()
+                            .use { it.readText() }) { value ->
+                            if (value == "success") {
+                                Log.e(TAG, "success")
+                            }
+                        }
+                    }
+
+                    "live.kankanews.com" -> {
+                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.shtv)
                             .bufferedReader()
                             .use { it.readText() }) { value ->
                             if (value == "success") {
@@ -438,7 +524,7 @@ class WebFragment : Fragment() {
                 )
             }
         }
-//        url = "http://live.snrtv.com/star"
+//        url = "https://live.kankanews.com/huikan/"
         webView.loadUrl(url)
     }
 

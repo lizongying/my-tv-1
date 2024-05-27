@@ -9,6 +9,10 @@
         const interval = setInterval(() => {
             const video = document.querySelector('video');
             if (video !== null) {
+                const url = document.URL;
+                const a = url.split('#')
+                const items = document.querySelectorAll('.pindao-lmlist-item');
+                items[parseInt(a[a.length - 1])].click();
                 video.attributes.autoplay = 'true';
                 video.attributes.muted = 'false';
                 video.attributes.controls = 'false';

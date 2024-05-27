@@ -9,10 +9,16 @@
         const interval = setInterval(() => {
             const video = document.querySelector('video');
             if (video !== null) {
+            body.appendChild(video);
+                const url = document.URL;
+                const a = url.split('#')
+                const items = document.querySelectorAll('#J_live_list>li>a');
+                items[parseInt(a[a.length - 1])].click();
                 video.attributes.autoplay = 'true';
                 video.attributes.muted = 'false';
                 video.attributes.controls = 'false';
                 video.style.objectFit = 'contain';
+                video.style.display = 'block';
                 video.style.position = 'fixed';
                 video.style.width = "100vw";
                 video.style.height = "100vh";

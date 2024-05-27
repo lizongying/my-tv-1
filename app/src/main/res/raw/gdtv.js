@@ -10,7 +10,7 @@
         divElement.style.zIndex = '9998';
         document.body.appendChild(divElement);
 
-        const count = 0;
+        let count = 0;
         const interval = setInterval(() => {
             const video = document.querySelector('video');
             if (video !== null) {

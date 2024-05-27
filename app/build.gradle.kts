@@ -57,7 +57,8 @@ fun getVersionName(): String {
     return try {
         val process = Runtime.getRuntime().exec("git describe --tags --always")
         process.waitFor()
-        val versionName = process.inputStream.bufferedReader().use(BufferedReader::readText).trim().removePrefix("v")
+        val versionName = process.inputStream.bufferedReader().use(BufferedReader::readText).trim()
+            .removePrefix("v")
         versionName.ifEmpty {
             "1.0.0"
         }
@@ -73,9 +74,13 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.16.0")
 
     // 21:2.11.0 17:2.6.4
-    val retrofit2Version = "2.11.0"
-    implementation("com.squareup.retrofit2:converter-gson:$retrofit2Version")
-    implementation ("com.squareup.retrofit2:retrofit:$retrofit2Version")
+    val retrofit2Version = "2.6.4"
+    // Gson 2.10.1 and older: API level 19
+    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("com.squareup.retrofit2:converter-gson:$retrofit2Version") {
+        exclude(group = "com.google.code.gson", module = "gson")
+    }
+    implementation("com.squareup.retrofit2:retrofit:$retrofit2Version")
 
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
@@ -87,4 +92,10 @@ dependencies {
     implementation("com.google.zxing:core:3.5.3")
 
     implementation("androidx.leanback:leanback:1.0.0")
+}
+
+configurations.configureEach {
+    resolutionStrategy {
+        force("com.google.code.gson:gson:2.10.1")
+    }
 }
