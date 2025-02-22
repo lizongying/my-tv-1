@@ -8,7 +8,7 @@
     android:layout_marginBottom="2dp"
     android:background="#FF263238">
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/icon"
         android:layout_width="50dp"
         android:layout_height="50dp"
@@ -16,7 +16,7 @@
         app:layout_constraintTop_toTopOf="parent"
         android:padding="5dp" />
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/title"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
@@ -30,7 +30,7 @@
         android:ellipsize="end"
         android:textSize="16sp" />
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/heart"
         android:layout_width="30dp"
         android:layout_height="30dp"
@@ -44,7 +44,7 @@
         android:padding="5dp"
         android:layout_marginEnd="5dp"/>
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

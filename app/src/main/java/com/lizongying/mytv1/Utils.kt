@@ -1,7 +1,6 @@
 package com.lizongying.mytv1
 
 import android.content.res.Resources
-import android.os.Build
 import android.util.Log
 import android.util.TypedValue
 import com.lizongying.mytv1.requests.HttpClient
@@ -52,7 +51,7 @@ object Utils {
 
                 HttpClient.okHttpClient.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) return@withContext 0
-                    response.body()?.string()?.toLong() ?: 0
+                    response.body?.string()?.toLong() ?: 0
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "getTimestampFromServer", e)
@@ -74,7 +73,10 @@ object Utils {
     }
 
     fun formatUrl(url: String): String {
-        if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("file://") || url.startsWith("socks://") || url.startsWith("socks5://")) {
+        if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("file://") || url.startsWith(
+                "socks://"
+            ) || url.startsWith("socks5://")
+        ) {
             return url
         }
 

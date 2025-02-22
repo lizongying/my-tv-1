@@ -6,8 +6,9 @@ import android.util.Log
 import okhttp3.ConnectionSpec
 import okhttp3.OkHttpClient
 import okhttp3.TlsVersion
+import java.security.KeyStore
 import javax.net.ssl.SSLContext
-import javax.net.ssl.TrustManager
+import javax.net.ssl.TrustManagerFactory
 import javax.net.ssl.X509TrustManager
 
 
@@ -20,39 +21,38 @@ object HttpClient {
         getUnsafeOkHttpClient()
     }
 
-    private fun enableTls12OnPreLollipop(client: OkHttpClient.Builder): OkHttpClient.Builder {
-        if (Build.VERSION.SDK_INT >= 16 && Build.VERSION.SDK_INT < 22) {
+    private fun OkHttpClient.Builder.enableTls12OnPreLollipop() {
+        if (Build.VERSION.SDK_INT < 22) {
             try {
-                val sc = SSLContext.getInstance("TLSv1.2")
+                val sslContext = SSLContext.getInstance("TLSv1.2")
+                sslContext.init(null, null, java.security.SecureRandom())
 
-                sc.init(null, null, null)
+                val trustManagerFactory = TrustManagerFactory.getInstance(
+                    TrustManagerFactory.getDefaultAlgorithm()
+                )
+                trustManagerFactory.init(null as KeyStore?)
+                val trustManagers = trustManagerFactory.trustManagers
+                val trustManager = trustManagers[0] as X509TrustManager
 
-                // a more robust version is to pass a custom X509TrustManager
-                // as the second parameter and make checkServerTrusted to accept your server.
-                // Credits: https://github.com/square/okhttp/issues/2372#issuecomment-1774955225
-                client.sslSocketFactory(Tls12SocketFactory(sc.socketFactory))
-
-                val cs = ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
-                    .tlsVersions(TlsVersion.TLS_1_2)
-                    .build()
-
-                val specs: MutableList<ConnectionSpec> = ArrayList()
-                specs.add(cs)
-                specs.add(ConnectionSpec.COMPATIBLE_TLS)
-                specs.add(ConnectionSpec.CLEARTEXT)
-
-                client.connectionSpecs(specs)
-            } catch (exc: java.lang.Exception) {
-                Log.e("OkHttpTLSCompat", "Error while setting TLS 1.2", exc)
+                sslSocketFactory(Tls12SocketFactory(sslContext.socketFactory), trustManager)
+                connectionSpecs(
+                    listOf(
+                        ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
+                            .tlsVersions(TlsVersion.TLS_1_2)
+                            .build(),
+                        ConnectionSpec.COMPATIBLE_TLS,
+                        ConnectionSpec.CLEARTEXT
+                    )
+                )
+            } catch (e: Exception) {
+                Log.e(TAG, "enableTls12OnPreLollipop", e)
             }
         }
-
-        return client
     }
 
     private fun getUnsafeOkHttpClient(): OkHttpClient {
         try {
-            val trustAllCerts: Array<TrustManager> = arrayOf(
+            val trustManager =
                 object : X509TrustManager {
                     override fun checkClientTrusted(
                         chain: Array<out java.security.cert.X509Certificate>?,
@@ -70,18 +70,16 @@ object HttpClient {
                         return emptyArray()
                     }
                 }
-            )
 
-            val sslContext = SSLContext.getInstance("SSL")
-            sslContext.init(null, trustAllCerts, java.security.SecureRandom())
+            val sslContext = SSLContext.getInstance("TLS")
+            sslContext.init(null, arrayOf(trustManager), java.security.SecureRandom())
 
-            val builder = OkHttpClient.Builder()
-                .sslSocketFactory(sslContext.socketFactory, trustAllCerts[0] as X509TrustManager)
+            return OkHttpClient.Builder()
+                .sslSocketFactory(sslContext.socketFactory, trustManager)
                 .hostnameVerifier { _, _ -> true }
                 .dns(DnsCache())
-
-            return enableTls12OnPreLollipop(builder).build()
-
+                .apply { enableTls12OnPreLollipop() }
+                .build()
         } catch (e: Exception) {
             throw RuntimeException(e)
         }

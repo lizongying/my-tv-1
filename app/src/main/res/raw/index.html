@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant">
     <head>
         <meta charset="UTF-8">
         <meta
                 name="viewport"
                 content="width=device-width, initial-scale=1.0">
-        <title>我的电视·一</title>
+        <title>我的電視·一</title>
         <style>
             body {
                 height: 100vh;
@@ -37,35 +37,37 @@
         </style>
     </head>
     <body>
-        <h1>我的电视·一</h1>
+        <h1>我的電視·一</h1>
         <hr />
-        <div class="inline-box">视频源地址，确认后保存：</div>
+        <div class="inline-box">視頻源地址：</div>
         <div class="inline-box">
             <input type="text" id="uri" style="width: 16rem;"/>
-            <input type="button" id="ok" value="确认"/>
+            <input type="button" id="ok" value="確認"/>
         </div>
         <hr />
-        <div class="inline-box">选择视频源文件后会自动上传保存：</div>
+        <div class="inline-box">視頻源文件，選擇後會自動上傳保存：</div>
         <div class="inline-box">
             <input type="file" id="input" multiple />
         </div>
         <hr />
-        <h2>格式支持json:</h2>
+        <h2>目前支持的配置格式:</h2>
         <div class="container">
             <h4>json</h4>
             <div class="message">
                 <pre>[
     {
-        "group": "组名",
+        "group": "組名",
+        "name": "標準標題",
+        "title": "標題",
         "logo": "图标",
-        "name": "标准标题",
-        "title": "标题",
         "uris": [
-            "视频地址"
-        ]
+            "視頻地址"
+        ],
+        "headers": {
+            "user-agent": ""
+        }
     }
-]
-                </pre>
+]</pre>
             </div>
         </div>
     </body>

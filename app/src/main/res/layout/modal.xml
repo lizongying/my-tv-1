@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/modal_image"
         android:layout_width="200dp"
         android:layout_height="200dp"
@@ -14,7 +14,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/modal_text"
         android:layout_width="200dp"
         android:layout_height="wrap_content"

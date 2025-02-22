@@ -78,18 +78,20 @@ object TVList {
                     if (!file.exists()) {
                         file.createNewFile()
                     }
-                    val str = response.body()!!.string()
-                    withContext(Dispatchers.Main) {
-                        if (str2List(str)) {
-                            file.writeText(str)
-                            SP.config = serverUrl
-                            "频道导入成功".showToast()
-                        } else {
-                            "频道导入错误".showToast()
+                    response.body?.let {
+                        val str = it.string()
+                        withContext(Dispatchers.Main) {
+                            if (str2List(str)) {
+                                file.writeText(str)
+                                SP.config = serverUrl
+                                "频道导入成功".showToast()
+                            } else {
+                                "频道导入错误".showToast()
+                            }
                         }
                     }
                 } else {
-                    Log.e("", "request status ${response.code()}")
+                    Log.e("", "request status ${response.code}")
                     "频道状态错误".showToast()
                 }
             } catch (e: Exception) {

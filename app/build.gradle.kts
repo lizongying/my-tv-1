@@ -65,22 +65,20 @@ fun getVersionName(): String {
 }
 
 dependencies {
+    implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.core:core-ktx:1.15.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.0")
     implementation("androidx.recyclerview:recyclerview:1.4.0")
     implementation("com.github.bumptech.glide:glide:4.16.0")
 
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.google.code.gson:gson:2.11.0")
 
-    implementation("androidx.constraintlayout:constraintlayout:2.2.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
-    implementation("androidx.work:work-runtime-ktx:2.10.0")
 
     implementation("io.github.lizongying:gua64:1.4.5")
 
     implementation("org.nanohttpd:nanohttpd:2.3.1")
 
     implementation("com.google.zxing:core:3.5.3")
-
-    implementation("androidx.appcompat:appcompat:1.7.0")
 }
