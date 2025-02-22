@@ -7,9 +7,11 @@ import android.widget.Toast
 import androidx.core.net.toFile
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.google.gson.JsonSyntaxException
 import com.lizongying.mytv1.R
 import com.lizongying.mytv1.SP
+import com.lizongying.mytv1.data.Global.gson
+import com.lizongying.mytv1.data.Global.typeTvList
+import com.lizongying.mytv1.data.TV
 import com.lizongying.mytv1.showToast
 import io.github.lizongying.Gua
 import kotlinx.coroutines.CoroutineScope
@@ -90,12 +92,6 @@ object TVList {
                     Log.e("", "request status ${response.code()}")
                     "频道状态错误".showToast()
                 }
-            } catch (e: JsonSyntaxException) {
-                Log.e("JSON Parse Error", e.toString())
-                "频道格式错误".showToast()
-            } catch (e: NullPointerException) {
-                Log.e("Null Pointer Error", e.toString())
-                "无法读取频道".showToast()
             } catch (e: Exception) {
                 Log.e("", "request error $e")
                 "频道请求错误".showToast()
@@ -149,8 +145,7 @@ object TVList {
         when (string[0]) {
             '[' -> {
                 try {
-                    val type = object : com.google.gson.reflect.TypeToken<List<TV>>() {}.type
-                    list = com.google.gson.Gson().fromJson(string, type)
+                    list = gson.fromJson(string, typeTvList)
                     Log.i(TAG, "导入频道 ${list.size}")
                 } catch (e: Exception) {
                     Log.i(TAG, "parse error $string")

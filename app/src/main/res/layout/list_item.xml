@@ -34,7 +34,7 @@
         android:id="@+id/heart"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:src="@drawable/ic_heart_empty"
+        android:src="@drawable/baseline_favorite_border_24"
         android:contentDescription="Heart Icon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"

@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.lizongying.mytv1.SP
+import com.lizongying.mytv1.data.Program
+import com.lizongying.mytv1.data.TV
 
 class TVModel(var tv: TV) : ViewModel() {
     private val _position = MutableLiveData<Int>()

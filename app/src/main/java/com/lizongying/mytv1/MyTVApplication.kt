@@ -1,17 +1,15 @@
 package com.lizongying.mytv1
 
+import android.app.Application
 import android.content.Context
 import android.content.res.Resources
 import android.os.Handler
 import android.os.Looper
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
-import androidx.multidex.MultiDex
-import androidx.multidex.MultiDexApplication
 
-class MyTVApplication : MultiDexApplication() {
+class MyTVApplication : Application() {
 
     companion object {
         private const val TAG = "MyTVApplication"
@@ -97,10 +95,5 @@ class MyTVApplication : MultiDexApplication() {
 
     fun sp2Px(sp: Float): Float {
         return (sp * ratio * scale).toFloat()
-    }
-
-    override fun attachBaseContext(base: Context?) {
-        super.attachBaseContext(base)
-        MultiDex.install(this)
     }
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/setting"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -23,165 +24,169 @@
         android:paddingRight="10dp"
         android:background="@color/blur"
         >
-        <TextView
-            android:id="@+id/name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/app_name"
-            android:textSize="16sp" />
-        <TextView
-            android:id="@+id/version"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text=""
-            android:textSize="14sp"
-            />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             >
-            <Button
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/title_blur"
+                android:text="@string/app_name"
+                android:textSize="16sp"
+                android:layout_gravity="bottom" />
+            <TextView
+                android:id="@+id/version_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/description_blur"
+                android:text=""
+                android:textSize="14sp"
+                android:layout_gravity="bottom"
+                android:layout_marginStart="8dp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:textColor="@color/title_blur"
+            android:text=""
+            android:textSize="14sp"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/remote_settings"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:background="@color/description_blur"
+                android:textColor="@color/blur"
+                android:layout_marginEnd="5dp"
+                android:textSize="14sp"
+                android:text="@string/server" />
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/confirm_config"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:background="@color/description_blur"
+                android:textColor="@color/blur"
+                android:layout_marginEnd="5dp"
+                android:textSize="14sp"
+                android:text="@string/channels" />
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/clear"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:background="@color/description_blur"
+                android:textColor="@color/blur"
+                android:layout_marginEnd="5dp"
+                android:text="@string/clear"
+                android:textSize="14sp"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal"
+            >
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/check_version"
                 android:layout_width="100dp"
-                android:layout_height="45dp"
+                android:layout_height="wrap_content"
+                android:background="@color/description_blur"
+                android:textColor="@color/blur"
                 android:layout_marginEnd="5dp"
                 android:textSize="14sp"
                 android:text="@string/check_version"
                 />
-            <ProgressBar
-                android:visibility="gone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                />
-            <TextView
-                android:id="@+id/version_name"
-                android:text=""
-                android:textSize="14sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <Button
-                android:id="@+id/qrcode"
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/exit"
                 android:layout_width="100dp"
-                android:layout_height="45dp"
-                android:layout_marginEnd="5dp"
-                android:textSize="14sp"
-                android:text="@string/server" />
-            <TextView
-                android:id="@+id/server"
-                android:layout_width="245dp"
                 android:layout_height="wrap_content"
-                android:text=""
+                android:background="@color/description_blur"
+                android:textColor="@color/blur"
+                android:layout_marginEnd="5dp"
+                android:text="@string/exit"
+                android:textSize="14sp"
+                />
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/appreciate"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:background="@color/description_blur"
+                android:textColor="@color/blur"
+                android:layout_marginEnd="5dp"
+                android:text="@string/appreciate"
                 android:textSize="14sp"
                 />
         </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <Button
-                android:id="@+id/confirm_config"
-                android:layout_width="100dp"
-                android:layout_height="45dp"
-                android:layout_marginEnd="5dp"
-                android:textSize="14sp"
-                android:text="@string/channels" />
-            <EditText
-                android:id="@+id/config"
-                android:layout_width="245dp"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:autofillHints=""
-                android:hint="@string/channels"
-                android:scrollbars="vertical"
-                android:inputType="textMultiLine" />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <Button
-                android:id="@+id/confirm_channel"
-                android:layout_width="100dp"
-                android:layout_height="45dp"
-                android:layout_marginEnd="5dp"
-                android:textSize="14sp"
-                android:text="@string/channel" />
-            <EditText
-                android:id="@+id/channel"
-                android:layout_width="245dp"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:autofillHints=""
-                android:hint="@string/channel"
-                android:scrollbars="vertical"
-                android:inputType="textMultiLine" />
-        </LinearLayout>
-        <Button
-            android:id="@+id/clear"
-            android:layout_width="100dp"
-            android:layout_height="45dp"
-            android:layout_marginTop="0dp"
-            android:text="@string/clear"
-            android:textSize="14sp"
-            />
-        <Button
-            android:id="@+id/appreciate"
-            android:layout_width="100dp"
-            android:layout_height="45dp"
-            android:layout_marginTop="0dp"
-            android:text="@string/appreciate"
-            android:textSize="14sp"
-            />
-        <Button
-            android:id="@+id/exit"
-            android:layout_width="100dp"
-            android:layout_height="45dp"
-            android:layout_marginTop="0dp"
-            android:text="@string/exit"
-            android:textSize="14sp"
-            />
-        <Switch
+
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switch_channel_reversal"
             android:text="@string/title_channel_reversal"
+            android:textColor="@color/title_blur"
             android:textSize="14sp"
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <Switch
+            android:layout_height="wrap_content"
+            app:thumbTint="@color/switch_thumb_color"
+            app:trackTint="@color/switch_track_color"
+            />
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switch_channel_num"
             android:text="@string/title_channel_num"
+            android:textColor="@color/title_blur"
             android:textSize="14sp"
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <Switch
+            android:layout_height="wrap_content"
+            app:thumbTint="@color/switch_thumb_color"
+            app:trackTint="@color/switch_track_color"
+            />
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switch_time"
             android:text="@string/title_time"
+            android:textColor="@color/title_blur"
             android:textSize="14sp"
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <Switch
+            android:layout_height="wrap_content"
+            app:thumbTint="@color/switch_thumb_color"
+            app:trackTint="@color/switch_track_color"
+            />
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switch_boot_startup"
             android:text="@string/title_boot_startup"
+            android:textColor="@color/title_blur"
             android:layout_marginTop="5dp"
             android:textSize="14sp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <Switch
+            android:layout_height="wrap_content"
+            app:thumbTint="@color/switch_thumb_color"
+            app:trackTint="@color/switch_track_color"
+            />
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switch_config_auto_load"
             android:text="@string/title_config_auto_load"
+            android:textColor="@color/title_blur"
             android:textSize="14sp"
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            app:thumbTint="@color/switch_thumb_color"
+            app:trackTint="@color/switch_track_color"
+            />
     </LinearLayout>
     </ScrollView>
 </LinearLayout>

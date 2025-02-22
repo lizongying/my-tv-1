@@ -1,6 +1,5 @@
 package com.lizongying.mytv1
 
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -10,6 +9,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
+import com.lizongying.mytv1.Utils.getDateTimestamp
 import com.lizongying.mytv1.databinding.ModalBinding
 
 
@@ -41,16 +41,33 @@ class ModalFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val bitmap: Bitmap? = arguments?.getParcelable(KEY_BITMAP)
+        val url = arguments?.getString(KEY_URL)
+        if (!url.isNullOrEmpty()) {
+            val size = Utils.dpToPx(200)
+            val u = "$url?${getDateTimestamp().toString().reversed()}"
+            val img = QrCodeUtil().createQRCodeBitmap(u, size, size)
 
-        if (bitmap != null) {
             Glide.with(requireContext())
-                .load(bitmap)
+                .load(img)
                 .into(binding.modalImage)
+            binding.modalText.text = u.removePrefix("http://")
+            binding.modalText.visibility = View.VISIBLE
+//            if (!isTV()) {
+//                binding.modal.setOnClickListener {
+//                    try {
+//                        val mainActivity = (activity as MainActivity)
+//                        mainActivity.showWebViewPopup(u)
+//                        handler.postDelayed(hideAppreciateModal, 0)
+//                    } catch (e: Exception) {
+//                        Log.e(TAG, "onViewCreated", e)
+//                    }
+//                }
+//            }
         } else {
             Glide.with(requireContext())
                 .load(arguments?.getInt(KEY_DRAWABLE_ID))
                 .into(binding.modalImage)
+            binding.modalText.visibility = View.GONE
         }
 
         handler.postDelayed(hideAppreciateModal, delayHideAppreciateModal)
@@ -70,7 +87,7 @@ class ModalFragment : DialogFragment() {
 
     companion object {
         const val KEY_DRAWABLE_ID = "drawable_id"
-        const val KEY_BITMAP = "bitmap"
+        const val KEY_URL = "url"
         const val TAG = "ModalFragment"
     }
 }

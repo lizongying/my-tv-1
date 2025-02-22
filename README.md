@@ -1,23 +1,24 @@
-# 我的电视·一
+# 我的電視·一
 
-电视网络视频播放软件，支持播放网页视频。
+電視視頻播放軟件，支持播放網頁視頻
 
 [my-tv-1](https://github.com/lizongying/my-tv-1)
 
 ## 使用
 
-* 遥控器左键/触屏单击打开节目列表
-* 遥控器右键/触屏双击打开配置
-* 遥控器返回键关闭节目列表/配置
-* 打开配置页后，配置地址后并确认，更新节目列表
-* 配置了视频源地址，并且打开了“启动后自动更新视频源”后，软件启动后自动更新视频源
-* 在节目列表显示的时候，右键收藏/取消收藏
+* 遙控器左鍵/觸屏單擊打開視頻列表
+* 遙控器右鍵/觸屏雙擊打開配置
+* 遙控器返回鍵關閉視頻列表/配置
+* 在聚焦視頻標題的時候，右鍵收藏/取消收藏
+* 打開配置后，選擇遠程配置，掃描二維碼可以配置視頻源等。也可以直接遠程配置地址 http://0.0.0.0:34568
+* 如果視頻源地址已配置，並且打開了“應用啟動后更新視頻源”后，應用啟動后會自動更新視頻源
+* 默認遙控器下鍵/觸屏下滑切換到下一個視頻。換台反轉打開後，邏輯相反
 
 注意：
 
-* 视频源可以设置为本地文件，格式如：file:///mnt/sdcard/tmp/channels.json
-* 如果设置的是本地文件，则软件重新启动后不会自动更新。需要手动确认。
-* 高版本可能需要授权
+* 遇到問題可以先考慮重啟/恢復默認/清除數據/重新安裝等方式自助解決
+* 視頻源可以設置為本地文件，格式如：file:///mnt/sdcard/tmp/channels.json
+  /channels.json
 
 目前支持的配置格式：
 
@@ -25,12 +26,12 @@
     ```json
     [
       {
-        "group": "组名",
-        "logo": "图标",
-        "name": "标准标题",
-        "title": "标题",
+        "group": "組名",
+        "name": "標準標題",
+        "title": "標題",
+         "logo": "图标",
         "uris": [
-          "视频地址"
+          "視頻地址"
         ],
         "headers": {
           "user-agent": ""
@@ -39,36 +40,31 @@
     ]
     ```
 
-推荐配合使用 [my-tv-server](https://github.com/lizongying/my-tv-server)
+推薦配合使用 [my-tv-server](https://github.com/lizongying/my-tv-server)
 
-下载安装 [releases](https://github.com/lizongying/my-tv-1/releases/)
+下載安裝 [releases](https://github.com/lizongying/my-tv-1/releases/)
 
-更多地址 [my-tv](https://lyrics.run/my-tv-1.html)
+更多下載地址 [my-tv](https://lyrics.run/my-tv-1.html)
 
-![image](./screenshots/img.png)
-![image](./screenshots/img_1.png)
+![image](./screenshots/img.jpg)
+![image](./screenshots/img1.jpg)
 
-## 更新日志
+## 更新日誌
 
-[更新日志](./HISTORY.md)
+[更新日誌](./HISTORY.md)
 
 ## 其他
 
-小米电视可以使用小米电视助手进行安装
-
-如电视可以启用ADB，也可以通过ADB进行安装：
+建議通過ADB進行安裝：
 
 ```shell
-adb install my-tv-1.apk
+adb install my-tv-0.apk
 ```
+
+小米電視可以使用小米電視助手進行安裝
 
 ## TODO
 
-* 节目增加预告
-* 兼容4.0
-* 插件商城
-* UI
-
-## 赞赏
+## 讚賞
 
 ![image](./screenshots/appreciate.jpeg)

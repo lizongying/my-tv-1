@@ -246,14 +246,14 @@ class ListAdapter(
                 binding.heart.setImageDrawable(
                     ContextCompat.getDrawable(
                         context,
-                        R.drawable.ic_heart
+                        R.drawable.baseline_favorite_24
                     )
                 )
             } else {
                 binding.heart.setImageDrawable(
                     ContextCompat.getDrawable(
                         context,
-                        R.drawable.ic_heart_empty
+                        R.drawable.baseline_favorite_border_24
                     )
                 )
             }

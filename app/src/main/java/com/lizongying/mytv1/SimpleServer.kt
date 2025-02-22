@@ -6,7 +6,7 @@ import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import com.google.gson.Gson
+import com.lizongying.mytv1.data.Global.gson
 import com.lizongying.mytv1.models.TVList
 import fi.iki.elonen.NanoHTTPD
 import java.io.BufferedReader
@@ -16,17 +16,14 @@ import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 
 
-class SimpleServer(private val context: Context, port: Int) : NanoHTTPD(port) {
+class SimpleServer(private val context: Context) : NanoHTTPD(PORT) {
     private val handler = Handler(Looper.getMainLooper())
 
     init {
         try {
             start()
-            val host = PortUtil.lan()
-            (context as MainActivity).setServer("$host:$port")
-            println("Server running on $host:$port")
         } catch (e: IOException) {
-            e.printStackTrace()
+            Log.e(TAG, "init", e)
         }
     }
 
@@ -92,7 +89,7 @@ class SimpleServer(private val context: Context, port: Int) : NanoHTTPD(port) {
             val map = HashMap<String, String>()
             session.parseBody(map)
             map["postData"]?.let {
-                val url = Utils.formatUrl(Gson().fromJson(it, UriResponse::class.java).uri)
+                val url = Utils.formatUrl(gson.fromJson(it, UriResponse::class.java).uri)
                 val uri = Uri.parse(url)
                 Log.i(TAG, "uri $uri")
                 handler.post {
@@ -122,5 +119,6 @@ class SimpleServer(private val context: Context, port: Int) : NanoHTTPD(port) {
 
     companion object {
         const val TAG = "SimpleServer"
+        const val PORT = 34568
     }
 }

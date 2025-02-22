@@ -44,6 +44,8 @@ class MainActivity : FragmentActivity() {
 
     private var server: SimpleServer? = null
 
+    private var isSafeToPerformFragmentTransactions = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -149,18 +151,11 @@ class MainActivity : FragmentActivity() {
 
         // TODO group position
 
-        val port = PortUtil.findFreePort()
-        if (port != -1) {
-            server = SimpleServer(this, port)
-        }
+        server = SimpleServer(this)
     }
 
     fun ready(tag: String) {
         Log.i(TAG, "ready $tag")
-    }
-
-    fun setServer(server: String) {
-        settingFragment.setServer(server)
     }
 
     private fun watch() {
@@ -370,13 +365,24 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun showFragment(fragment: Fragment) {
+        if (!isSafeToPerformFragmentTransactions) {
+            return
+        }
+
+        if (!fragment.isAdded) {
+            supportFragmentManager.beginTransaction()
+                .add(R.id.main_browse_fragment, fragment)
+                .commitAllowingStateLoss()
+            return
+        }
+
         if (!fragment.isHidden) {
             return
         }
 
         supportFragmentManager.beginTransaction()
             .show(fragment)
-            .commitNow()
+            .commitAllowingStateLoss()
     }
 
     private fun hideFragment(fragment: Fragment) {
@@ -483,13 +489,12 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun showSetting() {
-        if (!menuFragment.isHidden) {
+        if (menuFragment.isAdded && !menuFragment.isHidden) {
             return
         }
 
-        supportFragmentManager.beginTransaction()
-            .show(settingFragment)
-            .commit()
+        showFragment(settingFragment)
+
         settingActive()
     }
 
@@ -661,6 +666,18 @@ class MainActivity : FragmentActivity() {
         }
 
         return super.onKeyDown(keyCode, event)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        isSafeToPerformFragmentTransactions = true
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        isSafeToPerformFragmentTransactions = false
     }
 
     override fun onDestroy() {

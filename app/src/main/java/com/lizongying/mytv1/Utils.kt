@@ -2,17 +2,20 @@ package com.lizongying.mytv1
 
 import android.content.res.Resources
 import android.os.Build
+import android.util.Log
 import android.util.TypedValue
-import com.google.gson.Gson
-import com.lizongying.mytv1.requests.TimeResponse
+import com.lizongying.mytv1.requests.HttpClient
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 object Utils {
+    const val TAG = "Utils"
+
     private var between: Long = 0
 
     fun getDateFormat(format: String): String {
@@ -26,37 +29,34 @@ object Utils {
         return (System.currentTimeMillis() - between) / 1000
     }
 
-    suspend fun init() {
-        var currentTimeMillis: Long = 0
-        try {
-            currentTimeMillis = getTimestampFromServer()
-        } catch (e: Exception) {
-            println("Failed to retrieve timestamp from server: ${e.message}")
+    init {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val currentTimeMillis = getTimestampFromServer()
+                Log.i(TAG, "currentTimeMillis $currentTimeMillis")
+                if (currentTimeMillis > 0) {
+                    between = System.currentTimeMillis() - currentTimeMillis
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "init", e)
+            }
         }
-        between = System.currentTimeMillis() - currentTimeMillis
     }
 
-    /**
-     * 从服务器获取时间戳
-     * @return Long 时间戳
-     */
     private suspend fun getTimestampFromServer(): Long {
         return withContext(Dispatchers.IO) {
-            val client = okhttp3.OkHttpClient.Builder()
-                .connectTimeout(500, java.util.concurrent.TimeUnit.MILLISECONDS)
-                .readTimeout(1, java.util.concurrent.TimeUnit.SECONDS).build()
-            val request = okhttp3.Request.Builder()
-                .url("https://api.m.taobao.com/rest/api3.do?api=mtop.common.getTimestamp")
-                .build()
             try {
-                client.newCall(request).execute().use { response ->
-                    if (!response.isSuccessful) throw IOException("Unexpected code $response")
-                    val string = response.body()?.string()
-                    Gson().fromJson(string, TimeResponse::class.java).data.t.toLong()
+                val request = okhttp3.Request.Builder()
+                    .url("https://ip.ddnspod.com/timestamp")
+                    .build()
+
+                HttpClient.okHttpClient.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) return@withContext 0
+                    response.body()?.string()?.toLong() ?: 0
                 }
-            } catch (e: IOException) {
-                // Handle network errors
-                throw IOException("Error during network request", e)
+            } catch (e: Exception) {
+                Log.e(TAG, "getTimestampFromServer", e)
+                0
             }
         }
     }
@@ -73,20 +73,15 @@ object Utils {
         ).toInt()
     }
 
-    fun isTmallDevice() = Build.MANUFACTURER.equals("Tmall", ignoreCase = true)
-
     fun formatUrl(url: String): String {
-        // Check if the URL already starts with "http://" or "https://"
-        if (url.startsWith("http://") || url.startsWith("https://")) {
+        if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("file://") || url.startsWith("socks://") || url.startsWith("socks5://")) {
             return url
         }
 
-        // Check if the URL starts with "//"
         if (url.startsWith("//")) {
-            return "http://$url"
+            return "http:$url"
         }
 
-        // Otherwise, add "http://" to the beginning of the URL
-        return "http://${url}"
+        return "http://$url"
     }
 }

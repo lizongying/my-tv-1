@@ -112,6 +112,7 @@ class WebFragment : Fragment() {
                 view: WebView?,
                 request: WebResourceRequest?
             ): WebResourceResponse? {
+                return null
                 val uri = request?.url
                 if (uri?.host == "www.nmtv.cn" && uri.path?.endsWith(
                         ".css"
@@ -120,6 +121,7 @@ class WebFragment : Fragment() {
                     return null
                 }
                 if ((uri?.host == "www.btzx.com.cn"
+                            || uri?.host == "www.gdtv.cn"
                             || uri?.host == "g.cbg.cn"
                             || uri?.host == "www.ahtv.cn"
 //                            || uri?.host == "mapi.ahtv.cn"
@@ -160,10 +162,16 @@ class WebFragment : Fragment() {
                 return null
             }
 
+            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                webView.evaluateJavascript(context.resources.openRawResource(R.raw.prev)
+                    .bufferedReader()
+                    .use { it.readText().replace("{channel}", "$url") }, null)
+                super.onPageStarted(view, url, favicon)
+            }
+
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 val uri = Uri.parse(url)
-                Log.e(TAG, "uri ${uri.host}")
                 when (uri.host) {
                     "tv.cctv.com" -> webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
                         .bufferedReader()
@@ -173,15 +181,15 @@ class WebFragment : Fragment() {
                         }
                     }
 
-                    "www.gdtv.cn" -> {
-                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
-                            .bufferedReader()
-                            .use { it.readText() }) { value ->
-                            if (value == "success") {
-                                Log.e(TAG, "success")
-                            }
-                        }
-                    }
+//                    "www.gdtv.cn" -> {
+//                        webView.evaluateJavascript(context.resources.openRawResource(R.raw.ahtv)
+//                            .bufferedReader()
+//                            .use { it.readText() }) { value ->
+//                            if (value == "success") {
+//                                Log.e(TAG, "success")
+//                            }
+//                        }
+//                    }
 
                     "www.setv.sh.cn" -> {
                         webView.evaluateJavascript(context.resources.openRawResource(R.raw.gdtv)
@@ -514,16 +522,6 @@ class WebFragment : Fragment() {
         this.tvModel = tvModel
         var url = tvModel.videoUrl.value as String
         Log.i(TAG, "play ${tvModel.tv.title} $url")
-        val uri = Uri.parse(url)
-        Log.e(TAG, "uri ${uri.host}")
-        when (uri.host) {
-            "tv.cctv.com" -> {
-                webView.evaluateJavascript(
-                    "localStorage.setItem('cctv_live_resolution', '720');",
-                    null
-                )
-            }
-        }
 //        url = "https://live.kankanews.com/huikan/"
         webView.loadUrl(url)
     }

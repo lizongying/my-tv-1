@@ -2,10 +2,10 @@ package com.lizongying.mytv1
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.text.Editable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +16,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.marginEnd
 import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
+import com.lizongying.mytv1.ModalFragment.Companion.KEY_URL
+import com.lizongying.mytv1.SimpleServer.Companion.PORT
 import com.lizongying.mytv1.databinding.SettingBinding
 import com.lizongying.mytv1.models.TVList
 
@@ -29,75 +31,74 @@ class SettingFragment : Fragment() {
 
     private lateinit var updateManager: UpdateManager
 
+    private var server = "http://${PortUtil.lan()}:$PORT"
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        val application = requireActivity().applicationContext as MyTVApplication
         val context = requireContext()
+        val mainActivity = (activity as MainActivity)
 
         _binding = SettingBinding.inflate(inflater, container, false)
 
-        binding.versionName.text = "当前版本: v${context.appVersionName}"
+        binding.versionName.text = "v${context.appVersionName}"
         binding.version.text = "https://github.com/lizongying/my-tv-1"
 
         val switchChannelReversal = _binding?.switchChannelReversal
         switchChannelReversal?.isChecked = SP.channelReversal
         switchChannelReversal?.setOnCheckedChangeListener { _, isChecked ->
             SP.channelReversal = isChecked
-            (activity as MainActivity).settingActive()
+            mainActivity.settingActive()
         }
 
         val switchChannelNum = _binding?.switchChannelNum
         switchChannelNum?.isChecked = SP.channelNum
         switchChannelNum?.setOnCheckedChangeListener { _, isChecked ->
             SP.channelNum = isChecked
-            (activity as MainActivity).settingActive()
+            mainActivity.settingActive()
         }
 
         val switchTime = _binding?.switchTime
         switchTime?.isChecked = SP.time
         switchTime?.setOnCheckedChangeListener { _, isChecked ->
             SP.time = isChecked
-            (activity as MainActivity).settingActive()
+            mainActivity.settingActive()
         }
 
         val switchBootStartup = _binding?.switchBootStartup
         switchBootStartup?.isChecked = SP.bootStartup
         switchBootStartup?.setOnCheckedChangeListener { _, isChecked ->
             SP.bootStartup = isChecked
-            (activity as MainActivity).settingActive()
+            mainActivity.settingActive()
         }
 
         val switchConfigAutoLoad = _binding?.switchConfigAutoLoad
         switchConfigAutoLoad?.isChecked = SP.configAutoLoad
         switchConfigAutoLoad?.setOnCheckedChangeListener { _, isChecked ->
             SP.configAutoLoad = isChecked
-            (activity as MainActivity).settingActive()
+            mainActivity.settingActive()
         }
 
-        binding.qrcode.setOnClickListener {
+        binding.remoteSettings.setOnClickListener {
             val imageModalFragment = ModalFragment()
-            val size = Utils.dpToPx(200)
-            val img = QrCodeUtil().createQRCodeBitmap(binding.server.text.toString(), size, size)
             val args = Bundle()
-            args.putParcelable("bitmap", img);
+            args.putString(KEY_URL, server)
             imageModalFragment.arguments = args
 
             imageModalFragment.show(requireFragmentManager(), ModalFragment.TAG)
-            (activity as MainActivity).settingActive()
+            mainActivity.settingActive()
         }
 
         binding.checkVersion.setOnClickListener {
             requestInstallPermissions()
-            (activity as MainActivity).settingActive()
+            mainActivity.settingActive()
         }
 
-        val config = binding.config
-        config.text = SP.config?.let { Editable.Factory.getInstance().newEditable(it) }
-            ?: Editable.Factory.getInstance().newEditable("")
         binding.confirmConfig.setOnClickListener {
-            var url = config.text.toString().trim()
+            var url = SP.config!!
             url = Utils.formatUrl(url)
             uri = Uri.parse(url)
             if (uri.scheme == "") {
@@ -111,37 +112,13 @@ class SettingFragment : Fragment() {
                 } else {
                     TVList.parseUri(uri)
                 }
-            } else {
-                config.error = "无效的地址"
             }
-            (activity as MainActivity).settingActive()
-        }
-
-        val defaultChannel = binding.channel
-        defaultChannel.text =
-            SP.channel.let { Editable.Factory.getInstance().newEditable(it.toString()) }
-                ?: Editable.Factory.getInstance().newEditable("")
-        binding.confirmChannel.setOnClickListener {
-            val c = defaultChannel.text.toString().trim()
-            var channel = 0
-            try {
-                channel = c.toInt()
-            } catch (e: NumberFormatException) {
-                println(e)
-            }
-            if (channel > 0 && channel <= TVList.listModel.size) {
-                SP.channel = channel
-            } else {
-                defaultChannel.error = "无效的频道"
-            }
-            (activity as MainActivity).settingActive()
+            mainActivity.settingActive()
         }
 
         binding.clear.setOnClickListener {
             SP.config = ""
-            config.text = Editable.Factory.getInstance().newEditable("")
             SP.channel = 0
-            defaultChannel.text = Editable.Factory.getInstance().newEditable("")
             context.deleteFile(TVList.FILE_NAME)
             SP.deleteLike()
             SP.position = 0
@@ -156,7 +133,7 @@ class SettingFragment : Fragment() {
             imageModalFragment.arguments = args
 
             imageModalFragment.show(requireFragmentManager(), ModalFragment.TAG)
-            (activity as MainActivity).settingActive()
+            mainActivity.settingActive()
         }
 
         binding.setting.setOnClickListener {
@@ -167,7 +144,8 @@ class SettingFragment : Fragment() {
             requireActivity().finishAffinity()
         }
 
-        val application = requireActivity().applicationContext as MyTVApplication
+        val txtTextSize =
+            application.px2PxFont(binding.versionName.textSize)
 
         binding.content.layoutParams.width =
             application.px2Px(binding.content.layoutParams.width)
@@ -179,147 +157,121 @@ class SettingFragment : Fragment() {
         )
 
         binding.name.textSize = application.px2PxFont(binding.name.textSize)
-        binding.version.textSize = application.px2PxFont(binding.version.textSize)
+        binding.version.textSize = txtTextSize
         val layoutParamsVersion = binding.version.layoutParams as ViewGroup.MarginLayoutParams
         layoutParamsVersion.topMargin = application.px2Px(binding.version.marginTop)
         binding.version.layoutParams = layoutParamsVersion
 
-        binding.qrcode.layoutParams.width =
-            application.px2Px(binding.qrcode.layoutParams.width)
-        binding.qrcode.layoutParams.height =
-            application.px2Px(binding.qrcode.layoutParams.height)
-        binding.qrcode.textSize = application.px2PxFont(binding.qrcode.textSize)
-        val layoutParamsQrcode =
-            binding.qrcode.layoutParams as ViewGroup.MarginLayoutParams
-        layoutParamsQrcode.marginEnd = application.px2Px(binding.qrcode.marginEnd)
-        binding.qrcode.layoutParams = layoutParamsQrcode
-
-        binding.server.textSize = application.px2PxFont(binding.server.textSize)
-
-        binding.checkVersion.layoutParams.width =
-            application.px2Px(binding.checkVersion.layoutParams.width)
-        binding.checkVersion.layoutParams.height =
-            application.px2Px(binding.checkVersion.layoutParams.height)
-        binding.checkVersion.textSize = application.px2PxFont(binding.checkVersion.textSize)
-        val layoutParamsCheckVersion =
-            binding.checkVersion.layoutParams as ViewGroup.MarginLayoutParams
-        layoutParamsCheckVersion.marginEnd = application.px2Px(binding.checkVersion.marginEnd)
-        binding.checkVersion.layoutParams = layoutParamsCheckVersion
-
-        binding.versionName.textSize = application.px2PxFont(binding.versionName.textSize)
-
-        binding.confirmConfig.layoutParams.width =
+        val btnWidth =
             application.px2Px(binding.confirmConfig.layoutParams.width)
-        binding.confirmConfig.layoutParams.height =
-            application.px2Px(binding.confirmConfig.layoutParams.height)
-        binding.confirmConfig.textSize = application.px2PxFont(binding.confirmConfig.textSize)
-        val layoutParamsConfirmConfig =
+
+        val btnLayoutParams =
             binding.confirmConfig.layoutParams as ViewGroup.MarginLayoutParams
-        layoutParamsConfirmConfig.marginEnd = application.px2Px(binding.confirmConfig.marginEnd)
-        binding.confirmConfig.layoutParams = layoutParamsConfirmConfig
+        btnLayoutParams.marginEnd = application.px2Px(binding.confirmConfig.marginEnd)
 
-        binding.config.layoutParams.width =
-            application.px2Px(binding.config.layoutParams.width)
-        binding.config.textSize = application.px2PxFont(binding.config.textSize)
+        binding.versionName.textSize = txtTextSize
 
-        binding.confirmChannel.layoutParams.width =
-            application.px2Px(binding.confirmChannel.layoutParams.width)
-        binding.confirmChannel.layoutParams.height =
-            application.px2Px(binding.confirmChannel.layoutParams.height)
-        binding.confirmChannel.textSize =
-            application.px2PxFont(binding.confirmChannel.textSize)
-        val layoutParamsConfirmDefaultChannel =
-            binding.confirmChannel.layoutParams as ViewGroup.MarginLayoutParams
-        layoutParamsConfirmDefaultChannel.marginEnd =
-            application.px2Px(binding.confirmChannel.marginEnd)
-        binding.confirmChannel.layoutParams = layoutParamsConfirmDefaultChannel
+        for (i in listOf(
+            binding.remoteSettings,
+            binding.confirmConfig,
+            binding.clear,
+            binding.checkVersion,
+            binding.exit,
+            binding.appreciate,
+        )) {
+            i.layoutParams.width = btnWidth
+            i.textSize = txtTextSize
+            i.layoutParams = btnLayoutParams
+            i.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    i.background = ColorDrawable(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.focus
+                        )
+                    )
+                    i.setTextColor(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.white
+                        )
+                    )
+                } else {
+                    i.background = ColorDrawable(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.description_blur
+                        )
+                    )
+                    i.setTextColor(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.blur
+                        )
+                    )
+                }
+            }
+        }
 
-        binding.channel.layoutParams.width =
-            application.px2Px(binding.channel.layoutParams.width)
-        binding.channel.textSize = application.px2PxFont(binding.channel.textSize)
+        val textSizeSwitch = application.px2PxFont(binding.switchChannelReversal.textSize)
 
-        binding.clear.layoutParams.width =
-            application.px2Px(binding.clear.layoutParams.width)
-        binding.clear.layoutParams.height =
-            application.px2Px(binding.clear.layoutParams.height)
-        binding.clear.textSize = application.px2PxFont(binding.clear.textSize)
-        val layoutParamsPermission =
-            binding.clear.layoutParams as ViewGroup.MarginLayoutParams
-        layoutParamsPermission.topMargin =
-            application.px2Px(binding.clear.marginTop)
-        binding.clear.layoutParams = layoutParamsPermission
-
-        binding.appreciate.layoutParams.width =
-            application.px2Px(binding.appreciate.layoutParams.width)
-        binding.appreciate.layoutParams.height =
-            application.px2Px(binding.appreciate.layoutParams.height)
-        binding.appreciate.textSize = application.px2PxFont(binding.appreciate.textSize)
-        val layoutParamsAppreciate =
-            binding.appreciate.layoutParams as ViewGroup.MarginLayoutParams
-        layoutParamsAppreciate.topMargin =
-            application.px2Px(binding.appreciate.marginTop)
-        binding.appreciate.layoutParams = layoutParamsAppreciate
-
-        binding.exit.layoutParams.width =
-            application.px2Px(binding.exit.layoutParams.width)
-        binding.exit.layoutParams.height =
-            application.px2Px(binding.exit.layoutParams.height)
-        binding.exit.textSize = application.px2PxFont(binding.exit.textSize)
-        val layoutParamsExit =
-            binding.exit.layoutParams as ViewGroup.MarginLayoutParams
-        layoutParamsExit.topMargin =
-            application.px2Px(binding.exit.marginTop)
-        binding.exit.layoutParams = layoutParamsExit
-
-        val textSize = application.px2PxFont(binding.switchChannelReversal.textSize)
-
-        val layoutParamsChannelReversal =
+        val layoutParamsSwitch =
             binding.switchChannelReversal.layoutParams as ViewGroup.MarginLayoutParams
-        layoutParamsChannelReversal.topMargin =
+        layoutParamsSwitch.topMargin =
             application.px2Px(binding.switchChannelReversal.marginTop)
 
-        binding.switchChannelReversal.textSize = textSize
-        binding.switchChannelReversal.layoutParams = layoutParamsChannelReversal
-
-        binding.switchChannelNum.textSize = textSize
-        binding.switchChannelNum.layoutParams = layoutParamsChannelReversal
-
-        binding.switchTime.textSize = textSize
-        binding.switchTime.layoutParams = layoutParamsChannelReversal
-
-        binding.switchBootStartup.textSize = textSize
-        binding.switchBootStartup.layoutParams = layoutParamsChannelReversal
-        
-        binding.switchConfigAutoLoad.textSize = textSize
-        binding.switchConfigAutoLoad.layoutParams = layoutParamsChannelReversal
+        for (i in listOf(
+            binding.switchChannelReversal,
+            binding.switchChannelNum,
+            binding.switchTime,
+            binding.switchBootStartup,
+            binding.switchConfigAutoLoad,
+        )) {
+            i.textSize = textSizeSwitch
+            i.layoutParams = layoutParamsSwitch
+            i.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    i.setTextColor(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.focus
+                        )
+                    )
+                } else {
+                    i.setTextColor(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.title_blur
+                        )
+                    )
+                }
+            }
+        }
 
         updateManager = UpdateManager(context, context.appVersionCode)
-
-        (activity as MainActivity).ready(TAG)
         return binding.root
     }
 
-    fun setServer(server: String) {
-        binding.server.text = "http://$server"
-    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    fun setVersionName(versionName: String) {
-        binding.versionName.text = versionName
+        val context = requireActivity()
+        val mainActivity = (activity as MainActivity)
+
+        mainActivity.ready(TAG)
     }
 
     private fun hideSelf() {
         requireActivity().supportFragmentManager.beginTransaction()
             .hide(this)
-            .commit()
+            .commitAllowingStateLoss()
         (activity as MainActivity).showTime()
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
-        if (!hidden) {
-            val config = binding.config
-            config.text = SP.config?.let { Editable.Factory.getInstance().newEditable(it) }
-                ?: Editable.Factory.getInstance().newEditable("")
+        if (_binding != null && !hidden) {
+            binding.remoteSettings.requestFocus()
         }
     }
 
@@ -349,13 +301,17 @@ class SettingFragment : Fragment() {
             permissionsList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         }
 
+        Log.i(TAG, "permissionsList $permissionsList")
+
         if (permissionsList.isNotEmpty()) {
+            Log.i(TAG, "need to ask permissions")
             ActivityCompat.requestPermissions(
                 requireActivity(),
                 permissionsList.toTypedArray<String>(),
                 PERMISSIONS_REQUEST_CODE
             )
         } else {
+            Log.i(TAG, "don't need to ask permissions")
             updateManager.checkAndUpdate()
         }
     }
