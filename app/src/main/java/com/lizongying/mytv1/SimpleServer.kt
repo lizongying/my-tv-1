@@ -35,6 +35,7 @@ class SimpleServer(private val context: Context) : NanoHTTPD(PORT) {
             "/api/default-channel" -> handleDefaultChannel(session)
             "/api/import-text" -> handleImportText(session)
             "/api/import-uri" -> handleImportUri(session)
+            "/gua64min.js" -> handleStaticJs(session)
             else -> handleStaticContent(session)
         }
     }
@@ -143,6 +144,11 @@ class SimpleServer(private val context: Context) : NanoHTTPD(PORT) {
         val map = HashMap<String, String>()
         session.parseBody(map)
         return map["postData"]
+    }
+
+    private fun handleStaticJs(session: IHTTPSession): Response {
+        val html = loadHtmlFromResource(R.raw.gua64min)
+        return newFixedLengthResponse(Response.Status.OK, "text/javascript", html)
     }
 
     private fun handleStaticContent(session: IHTTPSession): Response {

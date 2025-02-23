@@ -35,6 +35,12 @@ object SP {
 
     const val KEY_EPG = "epg"
 
+    const val DEFAULT_CHANNEL_REVERSAL = false
+    const val DEFAULT_CHANNEL_NUM = false
+    const val DEFAULT_TIME = true
+    const val DEFAULT_BOOT_STARTUP = false
+    const val DEFAULT_CONFIG_URL = ""
+
     private lateinit var sp: SharedPreferences
 
     private var listener: OnSharedPreferenceChangeListener? = null
@@ -54,19 +60,19 @@ object SP {
     }
 
     var channelReversal: Boolean
-        get() = sp.getBoolean(KEY_CHANNEL_REVERSAL, false)
+        get() = sp.getBoolean(KEY_CHANNEL_REVERSAL, DEFAULT_CHANNEL_REVERSAL)
         set(value) = sp.edit().putBoolean(KEY_CHANNEL_REVERSAL, value).apply()
 
     var channelNum: Boolean
-        get() = sp.getBoolean(KEY_CHANNEL_NUM, true)
+        get() = sp.getBoolean(KEY_CHANNEL_NUM, DEFAULT_CHANNEL_NUM)
         set(value) = sp.edit().putBoolean(KEY_CHANNEL_NUM, value).apply()
 
     var time: Boolean
-        get() = sp.getBoolean(KEY_TIME, true)
+        get() = sp.getBoolean(KEY_TIME, DEFAULT_TIME)
         set(value) = sp.edit().putBoolean(KEY_TIME, value).apply()
 
     var bootStartup: Boolean
-        get() = sp.getBoolean(KEY_BOOT_STARTUP, false)
+        get() = sp.getBoolean(KEY_BOOT_STARTUP, DEFAULT_BOOT_STARTUP)
         set(value) = sp.edit().putBoolean(KEY_BOOT_STARTUP, value).apply()
 
     var position: Int
@@ -86,7 +92,7 @@ object SP {
         set(value) = sp.edit().putBoolean(KEY_REPEAT_INFO, value).apply()
 
     var configUrl: String?
-        get() = sp.getString(KEY_CONFIG_URL, "")
+        get() = sp.getString(KEY_CONFIG_URL, DEFAULT_CONFIG_URL)
         set(value) = sp.edit().putString(KEY_CONFIG_URL, value).apply()
 
     var configAutoLoad: Boolean

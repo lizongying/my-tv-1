@@ -33,6 +33,7 @@
 
             input[type="file"] {
                 color: #EEEEEE;
+                cursor: pointer;
             }
 
             input, textarea {
@@ -66,6 +67,7 @@
 
             input[type="button"] {
                 margin-left: .6rem;
+                cursor: pointer;
             }
         </style>
     </head>
@@ -87,8 +89,11 @@
         <div class="item">
             <label for="plain-text" id="plain-text-label">視頻源文本</label>
             <div class="container">
-                <textarea id="plain-text" rows="4"/></textarea>
-                <input type="button" id="confirm-plain-text" value="確認" class="confirm"/>
+                <textarea id="plain-text" rows="5"/></textarea>
+                <div style="display: grid">
+                    <input type="button" id="confirm-plain-text" value="確認" class="confirm"/>
+                    <input type="button" id="convert-plain-text" value="轉換" class="confirm"/>
+                </div>
             </div>
         </div>
 
@@ -113,7 +118,9 @@
 
         <hr/>
     </body>
-    <script>
+    <script type="module">
+        import {decode, encode, verify} from './gua64min.js';
+
         const uploadFile = document.querySelector('#upload-file');
 
         uploadFile.onchange = function (e) {
@@ -164,6 +171,14 @@
             const content = document.querySelector('#plain-text').value.trim();
             if (content.length > 0) {
                 save('/api/import-text', content)
+            }
+        }
+
+        document.querySelector('#convert-plain-text').onclick = () => {
+            const content = document.querySelector('#plain-text').value.trim()
+            const res = verify(content) ? decode(content) : encode(content) ;
+            if (res.length > 0) {
+                document.querySelector('#plain-text').value = res
             }
         }
 

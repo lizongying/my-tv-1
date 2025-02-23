@@ -6,9 +6,8 @@ data class TV(
     var id: Int = 0,
     var name: String = "",
     var title: String = "",
-    var description: String? = null,
+    var script: String? = null,
     var logo: String = "",
-    var image: String? = null,
     var uris: List<String>,
     var headers: Map<String, String>? = null,
     var group: String = "",
@@ -21,9 +20,8 @@ data class TV(
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
+                ", script='" + script + '\'' +
                 ", logo='" + logo + '\'' +
-                ", image='" + image + '\'' +
                 ", uris='" + uris + '\'' +
                 ", headers='" + headers + '\'' +
                 ", group='" + group + '\'' +

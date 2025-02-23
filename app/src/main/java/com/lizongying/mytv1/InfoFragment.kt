@@ -100,11 +100,6 @@ class InfoFragment : Fragment() {
             }
         }
 
-//        val program = tvViewModel.getProgramOne()
-//        if (program != null) {
-//            binding.infoDesc.text = program.name
-//        }
-
         handler.removeCallbacks(removeRunnable)
         view?.visibility = View.VISIBLE
         handler.postDelayed(removeRunnable, delay)

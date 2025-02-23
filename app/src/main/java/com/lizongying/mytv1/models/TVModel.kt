@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.lizongying.mytv1.SP
-import com.lizongying.mytv1.data.Program
 import com.lizongying.mytv1.data.TV
 
 class TVModel(var tv: TV) : ViewModel() {
@@ -14,7 +13,6 @@ class TVModel(var tv: TV) : ViewModel() {
 
     var retryTimes = 0
     var retryMaxTimes = 8
-    var programUpdateTime = 0L
 
     var groupIndex = 0
     var listIndex = 0
@@ -26,10 +24,6 @@ class TVModel(var tv: TV) : ViewModel() {
     fun setErrInfo(info: String) {
         _errInfo.value = info
     }
-
-    private var _program = MutableLiveData<MutableList<Program>>()
-    val program: LiveData<MutableList<Program>>
-        get() = _program
 
     private val _videoUrl = MutableLiveData<String>()
     val videoUrl: LiveData<String>
@@ -76,7 +70,6 @@ class TVModel(var tv: TV) : ViewModel() {
         _videoIndex.value = 0
         _like.value = SP.getLike(tv.id)
         _videoUrl.value = getVideoUrl()
-        _program.value = mutableListOf()
     }
 
     fun update(t: TV) {
