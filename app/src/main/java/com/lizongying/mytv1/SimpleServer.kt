@@ -7,12 +7,14 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import com.lizongying.mytv1.data.Global.gson
+import com.lizongying.mytv1.data.ReqSettings
+import com.lizongying.mytv1.data.RespSettings
 import com.lizongying.mytv1.models.TVList
+import com.lizongying.mytv1.models.TVList.CACHE_FILE_NAME
+import com.lizongying.mytv1.models.TVList.DEFAULT_CHANNELS_FILE
 import fi.iki.elonen.NanoHTTPD
-import java.io.BufferedReader
 import java.io.File
 import java.io.IOException
-import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 
 
@@ -29,82 +31,118 @@ class SimpleServer(private val context: Context) : NanoHTTPD(PORT) {
 
     override fun serve(session: IHTTPSession): Response {
         return when (session.uri) {
-            "/api/hello" -> handleHelloRequest(session)
-            "/api/channels" -> handleChannelsRequest(session)
-            "/api/uri" -> handleUriRequest(session)
+            "/api/settings" -> handleSettings()
+            "/api/default-channel" -> handleDefaultChannel(session)
+            "/api/import-text" -> handleImportText(session)
+            "/api/import-uri" -> handleImportUri(session)
             else -> handleStaticContent(session)
         }
     }
 
-    private fun handleHelloRequest(session: IHTTPSession): Response {
-        val response = "Hello from NanoHTTPD API!"
+    private fun handleSettings(): Response {
+        val response: String
+        try {
+            val file = File(context.filesDir, CACHE_FILE_NAME)
+            var str = if (file.exists()) {
+                file.readText()
+            } else {
+                ""
+            }
+            if (str.isEmpty()) {
+                str = context.resources.openRawResource(DEFAULT_CHANNELS_FILE).bufferedReader()
+                    .use { it.readText() }
+            }
+
+            val respSettings = RespSettings(
+                channelUri = SP.configUrl ?: "",
+                channelText = str,
+                channelDefault = SP.channel,
+            )
+            response = gson.toJson(respSettings) ?: ""
+        } catch (e: Exception) {
+            Log.e(TAG, "handleSettings", e)
+            return newFixedLengthResponse(
+                Response.Status.INTERNAL_ERROR,
+                MIME_PLAINTEXT,
+                e.message
+            )
+        }
+        return newFixedLengthResponse(Response.Status.OK, "application/json", response)
+    }
+
+    private fun handleDefaultChannel(session: IHTTPSession): Response {
+        val response = ""
+        try {
+            readBody(session)?.let {
+                handler.post {
+                    val req = gson.fromJson(it, ReqSettings::class.java)
+                    if (req.channel != null && req.channel > -1) {
+                        SP.channel = req.channel
+                    } else {
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "handleDefaultChannel", e)
+            return newFixedLengthResponse(
+                Response.Status.INTERNAL_ERROR,
+                MIME_PLAINTEXT,
+                e.message
+            )
+        }
         return newFixedLengthResponse(Response.Status.OK, "text/plain", response)
     }
 
-    private fun handleChannelsRequest(session: IHTTPSession): Response {
+    private fun handleImportText(session: IHTTPSession): Response {
+        val response = ""
         try {
-            val map = HashMap<String, String>()
-            session.parseBody(map)
-            map["postData"]?.let {
+            readBody(session)?.let {
                 handler.post {
                     if (TVList.str2List(it)) {
-                        File(context.filesDir, TVList.FILE_NAME).writeText(it)
+                        File(context.filesDir, TVList.CACHE_FILE_NAME).writeText(it)
                         "频道导入成功".showToast()
                     } else {
                         "频道导入错误".showToast()
                     }
                 }
             }
-        } catch (e: IOException) {
+        } catch (e: Exception) {
+            Log.e(TAG, "handleImportText", e)
             return newFixedLengthResponse(
                 Response.Status.INTERNAL_ERROR,
                 MIME_PLAINTEXT,
-                "SERVER INTERNAL ERROR: IOException: " + e.message
+                e.message
             )
         }
-        val response = "频道读取中"
         return newFixedLengthResponse(Response.Status.OK, "text/plain", response)
     }
 
-    private fun readBody(session: IHTTPSession): String {
-        val buffer = StringBuilder()
-        val inputStreamReader = InputStreamReader(session.inputStream)
-        val bufferedReader = BufferedReader(inputStreamReader)
-        bufferedReader.use {
-            var line = it.readLine()
-            while (line != null) {
-                buffer.append(line)
-                line = it.readLine()
-            }
-        }
-        return buffer.toString()
-    }
-
-    data class UriResponse(
-        var uri: String = "",
-    )
-
-    private fun handleUriRequest(session: IHTTPSession): Response {
+    private fun handleImportUri(session: IHTTPSession): Response {
+        val response = ""
         try {
-            val map = HashMap<String, String>()
-            session.parseBody(map)
-            map["postData"]?.let {
-                val url = Utils.formatUrl(gson.fromJson(it, UriResponse::class.java).uri)
-                val uri = Uri.parse(url)
+            readBody(session)?.let {
+                val req = gson.fromJson(it, ReqSettings::class.java)
+                val uri = Uri.parse(req.uri)
                 Log.i(TAG, "uri $uri")
                 handler.post {
                     TVList.parseUri(uri)
                 }
             }
-        } catch (e: IOException) {
+        } catch (e: Exception) {
+            Log.e(TAG, "handleImportUri", e)
             return newFixedLengthResponse(
                 Response.Status.INTERNAL_ERROR,
                 MIME_PLAINTEXT,
-                "SERVER INTERNAL ERROR: IOException: " + e.message
+                e.message
             )
         }
-        val response = "频道读取中"
         return newFixedLengthResponse(Response.Status.OK, "text/plain", response)
+    }
+
+    private fun readBody(session: IHTTPSession): String? {
+        val map = HashMap<String, String>()
+        session.parseBody(map)
+        return map["postData"]
     }
 
     private fun handleStaticContent(session: IHTTPSession): Response {

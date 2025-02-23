@@ -11,70 +11,112 @@
                 height: 100vh;
                 margin: 0;
                 padding: 1rem;
+                background-color: #263238;
+                color: #EEEEEE;
             }
 
-            body h2 {
-                margin-top: .5rem;
-            }
             hr {
                margin-top: .5rem;
                margin-bottom: .5rem;
             }
-            .container h4 {
-                margin-top: .5rem;
-            }
-            .message {
-                border: 1px solid #ccc;
-                line-height: 1.5rem;
-            }
-            .inline-box {
-                width: 20rem;
+
+            label {
                 display: inline-block;
+                width: 100%;
+                margin-bottom: .5rem;
             }
-            .uri {
-                width: 16rem;
+
+            textarea {
+                resize: none;
+                overflow: auto;
+            }
+
+            input[type="file"] {
+                color: #EEEEEE;
+            }
+
+            input, textarea {
+                color: #1a1a1a;
+                padding: .6rem;
+                border: none;
+                border-radius: 4px;
+                transition: box-shadow 0.3s ease-in-out;
+                vertical-align: bottom;
+            }
+
+            input:focus, textarea:focus {
+                outline: none;
+                border-color: #66afe9;
+                box-shadow: 0 0 10px rgba(102, 175, 233, 0.6);
+            }
+
+            .container {
+                display: flex;
+                flex-direction: row;
+            }
+
+            input[type="text"], input[type="number"], textarea {
+                flex: 1;
+                box-sizing: border-box;
+            }
+
+            input[type="text"], input[type="number"], input[type="file"], input[type="button"] {
+                height: 2.6rem;
+            }
+
+            input[type="button"] {
+                margin-left: .6rem;
             }
         </style>
     </head>
     <body>
         <h1>我的電視·一</h1>
+        <h4>視頻源可以设置為地址/文本/文件其中之一</h4>
         <hr />
-        <div class="inline-box">視頻源地址：</div>
-        <div class="inline-box">
-            <input type="text" id="uri" style="width: 16rem;"/>
-            <input type="button" id="ok" value="確認"/>
-        </div>
-        <hr />
-        <div class="inline-box">視頻源文件，選擇後會自動上傳保存：</div>
-        <div class="inline-box">
-            <input type="file" id="input" multiple />
-        </div>
-        <hr />
-        <h2>目前支持的配置格式:</h2>
-        <div class="container">
-            <h4>json</h4>
-            <div class="message">
-                <pre>[
-    {
-        "group": "組名",
-        "name": "標準標題",
-        "title": "標題",
-        "logo": "图标",
-        "uris": [
-            "視頻地址"
-        ],
-        "headers": {
-            "user-agent": ""
-        }
-    }
-]</pre>
+
+        <div class="item">
+            <label for="uri" id="uri-label">視頻源地址</label>
+            <div class="container">
+                <input type="text" id="uri"/>
+                <input type="button" id="confirm-uri" value="新增" class="add"/>
             </div>
         </div>
+
+        <hr/>
+
+        <div class="item">
+            <label for="plain-text" id="plain-text-label">視頻源文本</label>
+            <div class="container">
+                <textarea id="plain-text" rows="4"/></textarea>
+                <input type="button" id="confirm-plain-text" value="確認" class="confirm"/>
+            </div>
+        </div>
+
+        <hr/>
+
+        <div class="item">
+            <label for="upload-file" id="upload-file-label">視頻源文件，選擇後會自動上傳保存</label>
+            <div class="container">
+                <input type="file" id="upload-file" multiple/>
+            </div>
+        </div>
+
+        <hr/>
+
+        <div class="item">
+            <label for="channel" id="channel-label">默認播放頻道號，從1開始。0代表默認設置</label>
+            <div class="container">
+                <input type="number" id="channel" min="0" max="99"/>
+                <input type="button" id="confirm-channel" value="確認" class="confirm"/>
+            </div>
+        </div>
+
+        <hr/>
     </body>
     <script>
-        const input = document.getElementById('input');
+        const uploadFile = document.querySelector('#upload-file');
 
-        input.onchange = function (e) {
+        uploadFile.onchange = function (e) {
             handleFiles(e.target.files)
         }
 
@@ -87,13 +129,55 @@
         const read = async (file) => {
             const reader = new FileReader();
             reader.onload = (e) => {
-                sendFile(e.target.result);
+                save('/api/import-text', e.target.result);
             };
             reader.readAsText(file);
         }
 
-        const sendFile = async (body) => {
-            const response = await fetch('/api/channels', {
+        document.querySelector('#confirm-uri').onclick = () => {
+            let uri = document.querySelector('#uri').value.trim();
+            if (!uri) {
+                alert(`無效的地址${uri}`);
+                return;
+            }
+            if (!uri.startsWith('http')) {
+                uri = 'http://' + uri;
+            }
+            if (!uri.startsWith('http')) {
+                alert(`無效的地址${uri}`);
+                return;
+            }
+            if (!isValidUrl(uri)) {
+                alert(`無效的地址${uri}`);
+                return;
+            }
+            document.querySelector('#uri').value = uri;
+
+            if (uri.length > 0) {
+                save('/api/import-uri', JSON.stringify({
+                    uri: uri,
+                }))
+            }
+        }
+
+        document.querySelector('#confirm-plain-text').onclick = () => {
+            const content = document.querySelector('#plain-text').value.trim();
+            if (content.length > 0) {
+                save('/api/import-text', content)
+            }
+        }
+
+        document.querySelector('#confirm-channel').onclick = () => {
+            const channel = document.querySelector('#channel').value.trim();
+            if (channel.length > 0) {
+                save('/api/channel', JSON.stringify({
+                    channel: channel
+                }))
+            }
+        }
+
+        const save = async (url, body) => {
+            const response = await fetch(url, {
                 method: 'POST',
                 body: body
             });
@@ -101,21 +185,13 @@
             console.log(json);
         }
 
-        document.getElementById('ok').onclick = () => {
-            const uri = document.getElementById('uri').value.trim();
-            if (uri.length > 0) {
-                save(JSON.stringify({
-                    uri: uri
-                }))
-            }
-        }
-        const save = async (body) => {
-            const response = await fetch('/api/uri', {
-                method: 'POST',
-                body: body
-            });
-            const json = await response.text();
+        (async () => {
+            const response = await fetch('/api/settings');
+            const json = await response.json();
             console.log(json);
-        }
+            document.querySelector('#channel').value = json.channelDefault;
+            document.querySelector('#uri').value = json.channelUri;
+            document.querySelector('#plain-text').value = json.channelText;
+        })()
     </script>
 </html>

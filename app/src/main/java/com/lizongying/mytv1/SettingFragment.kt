@@ -98,7 +98,7 @@ class SettingFragment : Fragment() {
         }
 
         binding.confirmConfig.setOnClickListener {
-            var url = SP.config!!
+            var url = SP.configUrl!!
             url = Utils.formatUrl(url)
             uri = Uri.parse(url)
             if (uri.scheme == "") {
@@ -117,9 +117,9 @@ class SettingFragment : Fragment() {
         }
 
         binding.clear.setOnClickListener {
-            SP.config = ""
+            SP.configUrl = ""
             SP.channel = 0
-            context.deleteFile(TVList.FILE_NAME)
+            context.deleteFile(TVList.CACHE_FILE_NAME)
             SP.deleteLike()
             SP.position = 0
             TVList.setPosition(0)

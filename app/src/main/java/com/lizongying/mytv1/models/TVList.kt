@@ -22,7 +22,8 @@ import java.io.File
 
 object TVList {
     private const val TAG = "TVList"
-    const val FILE_NAME = "channels.txt"
+    const val CACHE_FILE_NAME = "channels.txt"
+    val DEFAULT_CHANNELS_FILE = R.raw.channels
     private lateinit var appDirectory: File
     private lateinit var serverUrl: String
     private lateinit var list: List<TV>
@@ -40,13 +41,13 @@ object TVList {
         groupModel.addTVListModel(TVListModel("全部频道", 1))
 
         appDirectory = context.filesDir
-        val file = File(appDirectory, FILE_NAME)
+        val file = File(appDirectory, CACHE_FILE_NAME)
         val str = if (file.exists()) {
             Log.i(TAG, "read $file")
             file.readText()
         } else {
             Log.i(TAG, "read resource")
-            context.resources.openRawResource(R.raw.channels).bufferedReader(Charsets.UTF_8)
+            context.resources.openRawResource(DEFAULT_CHANNELS_FILE).bufferedReader(Charsets.UTF_8)
                 .use { it.readText() }
         }
 
@@ -58,8 +59,8 @@ object TVList {
             Toast.makeText(context, "读取频道失败，请在菜单中进行设置", Toast.LENGTH_LONG).show()
         }
 
-        if (SP.configAutoLoad && !SP.config.isNullOrEmpty()) {
-            SP.config?.let {
+        if (SP.configAutoLoad && !SP.configUrl.isNullOrEmpty()) {
+            SP.configUrl?.let {
                 update(it)
             }
         }
@@ -74,7 +75,7 @@ object TVList {
                 val response = client.newCall(request).execute()
 
                 if (response.isSuccessful) {
-                    val file = File(appDirectory, FILE_NAME)
+                    val file = File(appDirectory, CACHE_FILE_NAME)
                     if (!file.exists()) {
                         file.createNewFile()
                     }
@@ -83,7 +84,7 @@ object TVList {
                         withContext(Dispatchers.Main) {
                             if (str2List(str)) {
                                 file.writeText(str)
-                                SP.config = serverUrl
+                                SP.configUrl = serverUrl
                                 "频道导入成功".showToast()
                             } else {
                                 "频道导入错误".showToast()
@@ -120,7 +121,7 @@ object TVList {
 
             try {
                 if (str2List(str)) {
-                    SP.config = uri.toString()
+                    SP.configUrl = uri.toString()
                     "频道导入成功".showToast(Toast.LENGTH_LONG)
                 } else {
                     "频道导入失败".showToast(Toast.LENGTH_LONG)

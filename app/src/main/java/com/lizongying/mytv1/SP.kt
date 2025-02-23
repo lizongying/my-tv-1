@@ -25,7 +25,7 @@ object SP {
 
     private const val KEY_REPEAT_INFO = "repeat_info"
 
-    private const val KEY_CONFIG = "config"
+    private const val KEY_CONFIG_URL = "config_url"
 
     private const val KEY_CONFIG_AUTO_LOAD = "config_auto_load"
 
@@ -85,9 +85,9 @@ object SP {
         get() = sp.getBoolean(KEY_REPEAT_INFO, true)
         set(value) = sp.edit().putBoolean(KEY_REPEAT_INFO, value).apply()
 
-    var config: String?
-        get() = sp.getString(KEY_CONFIG, "")
-        set(value) = sp.edit().putString(KEY_CONFIG, value).apply()
+    var configUrl: String?
+        get() = sp.getString(KEY_CONFIG_URL, "")
+        set(value) = sp.edit().putString(KEY_CONFIG_URL, value).apply()
 
     var configAutoLoad: Boolean
         get() = sp.getBoolean(KEY_CONFIG_AUTO_LOAD, false)
