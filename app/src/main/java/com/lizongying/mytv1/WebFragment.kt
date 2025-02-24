@@ -33,7 +33,7 @@ class WebFragment : Fragment() {
 
     private val scriptMap = mapOf(
         "live.kankanews.com" to R.raw.shtv,
-        "www.cbg.cn" to R.raw.cqtv,
+        "www.cbg.cn" to R.raw.ahtv,
         "www.sxrtv.com" to R.raw.sxrtv,
         "www.xjtvs.com.cn" to R.raw.xjtv,
         "www.yb983.com" to R.raw.ahtv,
@@ -95,17 +95,21 @@ class WebFragment : Fragment() {
         webView.settings.userAgentString =
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
 
+//        webView.settings.pluginState= WebSettings.PluginState.ON
+//        webView.settings.cacheMode= WebSettings.LOAD_CACHE_ELSE_NETWORK
+
         webView.isClickable = false
         webView.isFocusable = false
         webView.isFocusableInTouchMode = false
-        WebView.setWebContentsDebuggingEnabled(true)
 
-        webView.setOnTouchListener { v, event ->
-            if (event != null) {
-                (activity as MainActivity).gestureDetector.onTouchEvent(event)
-            }
-            true
-        }
+//        WebView.setWebContentsDebuggingEnabled(true)
+//
+//        webView.setOnTouchListener { v, event ->
+//            if (event != null) {
+//                (activity as MainActivity).gestureDetector.onTouchEvent(event)
+//            }
+//            true
+//        }
 
         (activity as MainActivity).ready(TAG)
         return binding.root
@@ -149,69 +153,86 @@ class WebFragment : Fragment() {
                 view: WebView?,
                 request: WebResourceRequest?
             ): WebResourceResponse? {
-                return null
-                val uri = request?.url
-                if (uri?.host == "www.nmtv.cn" && uri.path?.endsWith(
-                        ".css"
-                    ) == true
-                ) {
-                    return null
-                }
-                if ((uri?.host == "www.btzx.com.cn"
-                            || uri?.host == "www.gdtv.cn"
-                            || uri?.host == "g.cbg.cn"
-                            || uri?.host == "www.ahtv.cn"
-//                            || uri?.host == "mapi.ahtv.cn"
-//                            || uri?.host == "live.kankanews.com"
-//                            || uri?.host == "skin.kankanews.com"
+//                return null
 
-                            ) && uri.path?.endsWith(
-                        ".css"
-                    ) == true
-                ) {
-                    return null
-                }
-//                if (uri?.host == "www.xjtvs.com.cn" && uri.path?.endsWith(
-//                        ".css"
-//                    ) == true
-//                ) {
-//                    return null
-//                }
+                val uri = request?.url
 
                 if (request?.isForMainFrame == false && (uri?.path?.endsWith(".jpg") == true || uri?.path?.endsWith(
+                        ".jpeg"
+                    ) == true || uri?.path?.endsWith(
                         ".png"
                     ) == true || uri?.path?.endsWith(
                         ".gif"
                     ) == true || uri?.path?.endsWith(
-                        ".css"
+                        ".webp"
+                    ) == true || uri?.path?.endsWith(
+                        ".svg"
                     ) == true)
                 ) {
                     return WebResourceResponse("text/plain", "utf-8", null)
                 }
 
-                if (uri?.host?.endsWith("cctvpic.com") == true && uri.path?.endsWith(
+                return null
+
+                if (uri?.path?.endsWith(
                         ".css"
                     ) == true
                 ) {
-                    return WebResourceResponse("text/plain", "utf-8", null)
+                    return null
                 }
+
 //                Log.i(TAG, "${request?.method} ${uri.toString()} ${request?.requestHeaders}")
                 return null
             }
 
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-                webView.evaluateJavascript(
-                    context.resources.openRawResource(R.raw.prev)
-                        .bufferedReader()
-                        .use { it.readText().replace("{channel}", "$url") }, null
-                )
+//                webView.evaluateJavascript(
+//                    context.resources.openRawResource(R.raw.prev)
+//                        .bufferedReader()
+//                        .use { it.readText().replace("{channel}", "$url") }, null
+//                )
+
+                val cssStyle = """
+body {
+    body.style.display = 'none !important';
+}
+body * {
+    font-size: 1px;
+    color: black !important;
+    background-color: black !important;
+    border-color: black !important;
+    outline-color: black !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+    fill: black !important;
+    stroke: black !important;
+}
+        """.trimIndent()
+
+                val jsCode = """
+(function() {
+    const style = document.createElement('style');
+    style.type = 'text/css';
+    style.innerHTML = `${cssStyle}`;
+    document.head.appendChild(style);
+})();
+        """.trimIndent()
+
+//                webView.evaluateJavascript(
+//                    jsCode, null
+//                )
+
                 super.onPageStarted(view, url, favicon)
             }
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
-                val uri = Uri.parse(url)
 
+                tvModel?.tv?.script?.let {
+                    webView.evaluateJavascript(it, null)
+                }
+
+                val uri = Uri.parse(url)
                 var script = scriptMap[uri.host]
                 if (script == null) {
                     script = R.raw.ahtv
@@ -236,7 +257,7 @@ class WebFragment : Fragment() {
         this.tvModel = tvModel
         var url = tvModel.videoUrl.value as String
         Log.i(TAG, "play ${tvModel.tv.title} $url")
-//        url = "https://live.kankanews.com/huikan/"
+//        url = "https://www.brtn.cn/btv/btvsy_index"
         webView.loadUrl(url)
     }
 

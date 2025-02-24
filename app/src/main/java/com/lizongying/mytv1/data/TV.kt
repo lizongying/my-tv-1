@@ -12,7 +12,6 @@ data class TV(
     var headers: Map<String, String>? = null,
     var group: String = "",
     var type: Type = Type.WEB,
-    var child: List<TV>,
 ) : Serializable {
 
     override fun toString(): String {

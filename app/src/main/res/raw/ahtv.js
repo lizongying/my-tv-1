@@ -23,11 +23,13 @@
             for (let i = 0; i < images.length; i++) {
                 images[i].style.display = 'none';
             }
+
             clearInterval(interval);
             setTimeout(function () {
                 console.log('success');
             }, 0)
         }
+
         count++;
         if (count > 6 * 1000) {
             clearInterval(interval);

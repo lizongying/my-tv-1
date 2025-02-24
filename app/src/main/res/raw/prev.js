@@ -1,4 +1,5 @@
 (function () {
+    console.log(Date());
     const channel = '{channel}';
     const host = window.location.host;
     switch (host) {
@@ -10,7 +11,7 @@
     const originalOpen = XMLHttpRequest.prototype.open;
 
     XMLHttpRequest.prototype.open = function(method, url, async, user, password) {
-        this._url = url;  // Store URL for later use
+        this._url = url;
         return originalOpen.apply(this, arguments);
     };
 
