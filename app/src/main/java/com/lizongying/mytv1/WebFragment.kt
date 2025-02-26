@@ -96,7 +96,7 @@ class WebFragment : Fragment() {
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
 
 //        webView.settings.pluginState= WebSettings.PluginState.ON
-//        webView.settings.cacheMode= WebSettings.LOAD_CACHE_ELSE_NETWORK
+//        webView.settings.cacheMode= WebSettings.LOAD_NO_CACHE
 
         webView.isClickable = false
         webView.isFocusable = false
@@ -132,7 +132,12 @@ class WebFragment : Fragment() {
 //                    )
 
                     if (consoleMessage.message() == "success") {
-                        Log.e(TAG, "success")
+                        Log.i(TAG, "${tvModel?.tv?.title} success")
+                        tvModel?.tv?.finished?.let {
+                            webView.evaluateJavascript(it) { res ->
+                                Log.i(TAG, "${tvModel?.tv?.title} finished: $res")
+                            }
+                        }
                         tvModel?.setErrInfo("web ok")
                     }
                 }
@@ -156,6 +161,19 @@ class WebFragment : Fragment() {
 //                return null
 
                 val uri = request?.url
+
+
+                tvModel?.tv?.block?.let {
+                    for (i in it) {
+                        if (uri?.path?.contains(
+                                i
+                            ) == true
+                        ) {
+                            Log.i(TAG, "block path ${uri.path}")
+                            return WebResourceResponse("text/plain", "utf-8", null)
+                        }
+                    }
+                }
 
                 if (request?.isForMainFrame == false && (uri?.path?.endsWith(".jpg") == true || uri?.path?.endsWith(
                         ".jpeg"
@@ -226,6 +244,10 @@ body * {
             }
 
             override fun onPageFinished(view: WebView?, url: String?) {
+                tvModel?.tv?.started?.let {
+                    webView.evaluateJavascript(it, null)
+                }
+
                 super.onPageFinished(view, url)
 
                 tvModel?.tv?.script?.let {
@@ -249,15 +271,10 @@ body * {
     }
 
     fun play(tvModel: TVModel) {
-//        if (tvModel.tv.type == Type.HLS) {
-//            "暂不支持此格式".showToast(Toast.LENGTH_LONG)
-//            return
-//        }
-
         this.tvModel = tvModel
         var url = tvModel.videoUrl.value as String
         Log.i(TAG, "play ${tvModel.tv.title} $url")
-//        url = "https://www.brtn.cn/btv/btvsy_index"
+//        url = "https://www.gdtv.cn/tvChannelDetail/43"
         webView.loadUrl(url)
     }
 

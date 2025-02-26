@@ -24,6 +24,9 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
     private lateinit var groupAdapter: GroupAdapter
     private lateinit var listAdapter: ListAdapter
 
+    private var groupWidth = 0
+    private var listWidth = 0
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         Log.i(TAG, "onCreate")
         super.onActivityCreated(savedInstanceState)
@@ -34,6 +37,7 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
         savedInstanceState: Bundle?
     ): View {
         val context = requireContext()
+        val application = context.applicationContext as MyTVApplication
         _binding = MenuBinding.inflate(inflater, container, false)
 
         groupAdapter = GroupAdapter(
@@ -44,6 +48,12 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
         binding.group.adapter = groupAdapter
         binding.group.layoutManager =
             LinearLayoutManager(context)
+        groupWidth = application.px2Px(binding.group.layoutParams.width)
+        binding.group.layoutParams.width = if (SP.compactMenu) {
+            groupWidth * 4 / 5
+        } else {
+            groupWidth
+        }
         groupAdapter.setItemListener(this)
 
         var tvListModel = TVList.groupModel.getTVListModel(TVList.groupModel.position.value!!)
@@ -61,6 +71,12 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
         binding.list.adapter = listAdapter
         binding.list.layoutManager =
             LinearLayoutManager(context)
+        listWidth = application.px2Px(binding.list.layoutParams.width)
+        binding.list.layoutParams.width = if (SP.compactMenu) {
+            listWidth * 4 / 5
+        } else {
+            listWidth
+        }
         listAdapter.focusable(false)
         listAdapter.setItemListener(this)
 
@@ -225,6 +241,22 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
             view?.post {
                 groupAdapter.visiable = false
                 listAdapter.visiable = false
+            }
+        }
+    }
+
+    fun updateSize() {
+        view?.post {
+            binding.group.layoutParams.width = if (SP.compactMenu) {
+                groupWidth * 4 / 5
+            } else {
+                groupWidth
+            }
+
+            binding.list.layoutParams.width = if (SP.compactMenu) {
+                listWidth * 4 / 5
+            } else {
+                listWidth
             }
         }
     }

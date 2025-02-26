@@ -1,22 +1,28 @@
 package com.lizongying.mytv1
 
 import android.os.Bundle
-import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.marginEnd
 import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
-import com.lizongying.mytv1.Utils.getDateFormat
+import androidx.lifecycle.lifecycleScope
 import com.lizongying.mytv1.databinding.TimeBinding
+import com.lizongying.mytv1.models.TVList
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 class TimeFragment : Fragment() {
     private var _binding: TimeBinding? = null
     private val binding get() = _binding!!
 
-    private val handler = Handler()
     private val delay: Long = 1000
+
+    private var job: Job? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,29 +49,42 @@ class TimeFragment : Fragment() {
         return binding.root
     }
 
-    override fun onHiddenChanged(hidden: Boolean) {
-        super.onHiddenChanged(hidden)
-        if (!hidden) {
-            handler.removeCallbacks(showRunnable)
-            handler.postDelayed(showRunnable, 0)
-        } else {
-            handler.removeCallbacks(showRunnable)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        job = viewLifecycleOwner.lifecycleScope.launch {
+            while (isActive) {
+                binding.content.text = TVList.getTime()
+                delay(delay)
+            }
         }
     }
 
-    private val showRunnable: Runnable = Runnable {
-        run {
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (!hidden) {
             if (_binding == null) {
-                return@Runnable
+                Log.w(TAG, "_binding is null")
+                return
             }
-            binding.content.text = getDateFormat("HH:mm")
-            handler.postDelayed(showRunnable, delay)
+
+            job = viewLifecycleOwner.lifecycleScope.launch {
+                while (isActive) {
+                    binding.content.text = TVList.getTime()
+                    delay(delay)
+                }
+            }
+        } else {
+            job?.cancel()
+            job = null
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        job?.cancel()
+        job = null
     }
 
     companion object {

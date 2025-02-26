@@ -99,7 +99,6 @@ class MainActivity : FragmentActivity() {
                 .add(R.id.main_browse_fragment, webFragment)
                 .add(R.id.main_browse_fragment, errorFragment)
                 .add(R.id.main_browse_fragment, loadingFragment)
-                .add(R.id.main_browse_fragment, timeFragment)
                 .add(R.id.main_browse_fragment, infoFragment)
                 .add(R.id.main_browse_fragment, channelFragment)
                 .add(R.id.main_browse_fragment, menuFragment)
@@ -108,14 +107,11 @@ class MainActivity : FragmentActivity() {
                 .hide(settingFragment)
                 .hide(errorFragment)
                 .hide(loadingFragment)
-                .hide(timeFragment)
                 .show(webFragment)
                 .commitNow()
         }
 
         gestureDetector = GestureDetector(this, GestureListener(this))
-
-        showTime()
     }
 
     override fun onResumeFragments() {
@@ -156,6 +152,10 @@ class MainActivity : FragmentActivity() {
 
     fun ready(tag: String) {
         Log.i(TAG, "ready $tag")
+    }
+
+    fun updateMenuSize() {
+        menuFragment.updateSize()
     }
 
     private fun watch() {
@@ -386,13 +386,17 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun hideFragment(fragment: Fragment) {
-        if (fragment.isHidden) {
+        if (!isSafeToPerformFragmentTransactions) {
+            return
+        }
+
+        if (!fragment.isAdded || fragment.isHidden) {
             return
         }
 
         supportFragmentManager.beginTransaction()
             .hide(fragment)
-            .commitNow()
+            .commitAllowingStateLoss()
     }
 
     fun menuActive() {
@@ -416,11 +420,11 @@ class MainActivity : FragmentActivity() {
     private val hideSetting = Runnable {
         if (!settingFragment.isHidden) {
             supportFragmentManager.beginTransaction().hide(settingFragment).commitNow()
-            showTime()
         }
+        addTimeFragment()
     }
 
-    fun showTime() {
+    fun addTimeFragment() {
         if (SP.time) {
             showFragment(timeFragment)
         } else {
@@ -465,13 +469,14 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun back() {
-        if (!menuFragment.isHidden) {
+        if (menuFragment.isAdded && !menuFragment.isHidden) {
             hideMenuFragment()
             return
         }
 
-        if (!settingFragment.isHidden) {
+        if (settingFragment.isAdded && !settingFragment.isHidden) {
             hideSettingFragment()
+            addTimeFragment()
             return
         }
 
@@ -481,7 +486,7 @@ class MainActivity : FragmentActivity() {
         }
 
         doubleBackToExitPressedOnce = true
-        Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show()
+        R.string.press_again_to_exit.showToast()
 
         Handler(Looper.getMainLooper()).postDelayed({
             doubleBackToExitPressedOnce = false
@@ -509,7 +514,6 @@ class MainActivity : FragmentActivity() {
         supportFragmentManager.beginTransaction()
             .hide(settingFragment)
             .commit()
-        showTime()
     }
 
     private fun showErrorFragment(msg: String) {
@@ -672,6 +676,8 @@ class MainActivity : FragmentActivity() {
         super.onResume()
 
         isSafeToPerformFragmentTransactions = true
+
+        addTimeFragment()
     }
 
     override fun onPause() {

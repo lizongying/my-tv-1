@@ -13,4 +13,7 @@
     <string name="default_channel">默認頻道號</string>
     <string name="clear">恢復默認</string>
     <string name="server">遠程配置</string>
+    <string name="press_again_to_exit">再按一次退出</string>
+    <string name="compact_menu">緊湊的菜單</string>
+    <string name="display_seconds">時間顯示秒</string>
 </resources>

@@ -82,6 +82,17 @@ class SettingFragment : Fragment() {
             mainActivity.settingActive()
         }
 
+        val switchCompactMenu = _binding?.switchCompactMenu
+        switchCompactMenu?.isChecked = SP.compactMenu
+        switchCompactMenu?.setOnCheckedChangeListener { _, isChecked ->
+            SP.compactMenu = isChecked
+            mainActivity.updateMenuSize()
+            mainActivity.settingActive()
+        }
+
+        val switchDisplaySeconds = _binding?.switchDisplaySeconds
+        switchDisplaySeconds?.isChecked = SP.displaySeconds
+
         binding.remoteSettings.setOnClickListener {
             val imageModalFragment = ModalFragment()
             val args = Bundle()
@@ -123,6 +134,8 @@ class SettingFragment : Fragment() {
             SP.deleteLike()
             SP.position = 0
             TVList.setPosition(0)
+
+            TVList.setDisplaySeconds(SP.DEFAULT_DISPLAY_SECONDS)
         }
 
         binding.appreciate.setOnClickListener {
@@ -226,6 +239,8 @@ class SettingFragment : Fragment() {
             binding.switchTime,
             binding.switchBootStartup,
             binding.switchConfigAutoLoad,
+            binding.switchCompactMenu,
+            binding.switchDisplaySeconds,
         )) {
             i.textSize = textSizeSwitch
             i.layoutParams = layoutParamsSwitch
@@ -259,13 +274,17 @@ class SettingFragment : Fragment() {
         val mainActivity = (activity as MainActivity)
 
         mainActivity.ready(TAG)
+
+        binding.switchDisplaySeconds.setOnCheckedChangeListener { _, isChecked ->
+            TVList.setDisplaySeconds(isChecked)
+        }
     }
 
     private fun hideSelf() {
         requireActivity().supportFragmentManager.beginTransaction()
             .hide(this)
             .commitAllowingStateLoss()
-        (activity as MainActivity).showTime()
+        (activity as MainActivity).addTimeFragment()
     }
 
     override fun onHiddenChanged(hidden: Boolean) {

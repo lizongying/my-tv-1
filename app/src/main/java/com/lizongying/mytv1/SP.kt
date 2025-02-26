@@ -33,6 +33,10 @@ object SP {
 
     private const val KEY_LIKE = "like"
 
+    private const val KEY_DISPLAY_SECONDS = "display_seconds"
+
+    private const val KEY_COMPACT_MENU = "compact_menu"
+
     const val KEY_EPG = "epg"
 
     const val DEFAULT_CHANNEL_REVERSAL = false
@@ -40,6 +44,8 @@ object SP {
     const val DEFAULT_TIME = true
     const val DEFAULT_BOOT_STARTUP = false
     const val DEFAULT_CONFIG_URL = ""
+    const val DEFAULT_DISPLAY_SECONDS = true
+    const val DEFAULT_COMPACT_MENU = true
 
     private lateinit var sp: SharedPreferences
 
@@ -125,10 +131,18 @@ object SP {
 
     var epg: String?
         get() = sp.getString(KEY_EPG, "")
-        set(value)  {
+        set(value) {
             if (value != this.epg) {
                 sp.edit().putString(KEY_EPG, value).apply()
                 listener?.onSharedPreferenceChanged(KEY_EPG)
             }
         }
+
+    var displaySeconds: Boolean
+        get() = sp.getBoolean(KEY_DISPLAY_SECONDS, DEFAULT_DISPLAY_SECONDS)
+        set(value) = sp.edit().putBoolean(KEY_DISPLAY_SECONDS, value).apply()
+
+    var compactMenu: Boolean
+        get() = sp.getBoolean(KEY_COMPACT_MENU, DEFAULT_COMPACT_MENU)
+        set(value) = sp.edit().putBoolean(KEY_COMPACT_MENU, value).apply()
 }

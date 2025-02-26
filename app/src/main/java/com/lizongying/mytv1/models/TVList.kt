@@ -9,6 +9,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.lizongying.mytv1.R
 import com.lizongying.mytv1.SP
+import com.lizongying.mytv1.Utils.getDateFormat
 import com.lizongying.mytv1.data.Global.gson
 import com.lizongying.mytv1.data.Global.typeTvList
 import com.lizongying.mytv1.data.TV
@@ -29,6 +30,17 @@ object TVList {
     private lateinit var list: List<TV>
     var listModel: List<TVModel> = listOf()
     val groupModel = TVGroupModel()
+
+    private var timeFormat = if (SP.displaySeconds) "HH:mm:ss" else "HH:mm"
+
+    fun setDisplaySeconds(displaySeconds: Boolean) {
+        timeFormat = if (displaySeconds) "HH:mm:ss" else "HH:mm"
+        SP.displaySeconds = displaySeconds
+    }
+
+    fun getTime(): String {
+        return getDateFormat(timeFormat)
+    }
 
     private val _position = MutableLiveData<Int>()
     val position: LiveData<Int>

@@ -88,9 +88,9 @@ class UpdateManager(
     private fun startDownload(context: Context, release: ReleaseResponse) {
         val versionName = release.version_name
         val apkName = "my-tv-1"
-        val apkFileName = "$apkName-${release.version_name}.apk"
+        val apkFileName = apkName + "_${release.version_name}.apk"
         val downloadUrl =
-            "${HttpClient.DOWNLOAD_HOST}${release.version_name}/$apkName-${release.version_name}.apk"
+            "${HttpClient.DOWNLOAD_HOST}${release.version_name}/$apkFileName"
         Log.i(TAG, "downloadUrl: $downloadUrl")
 
         CoroutineScope(Dispatchers.Main).launch {
