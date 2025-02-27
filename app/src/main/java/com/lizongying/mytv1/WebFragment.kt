@@ -34,11 +34,11 @@ class WebFragment : Fragment() {
     private val scriptMap = mapOf(
         "live.kankanews.com" to R.raw.shtv,
         "www.cbg.cn" to R.raw.ahtv,
-        "www.sxrtv.com" to R.raw.sxrtv,
+        "www.sxrtv.com" to R.raw.sxrtv1,
         "www.xjtvs.com.cn" to R.raw.xjtv,
         "www.yb983.com" to R.raw.ahtv,
-        "www.yntv.cn" to R.raw.yntv,
-        "www.nmtv.cn" to R.raw.nmgtv,
+        "www.yntv.cn" to R.raw.ahtv,
+        "www.nmtv.cn" to R.raw.nmgtv1,
 //        "www.snrtv.com" to R.raw.ahtv,
         "live.snrtv.com" to R.raw.ahtv,
         "www.btzx.com.cn" to R.raw.ahtv,
@@ -62,11 +62,13 @@ class WebFragment : Fragment() {
 //        "www.ahtv.cn" to R.raw.ahtv,
         "news.hbtv.com.cn" to R.raw.ahtv,
         "www.sztv.com.cn" to R.raw.ahtv,
-        "www.yangshipin.cn" to R.raw.ysp,
         "www.setv.sh.cn" to R.raw.gdtv,
 //        "www.gdtv.cn" to R.raw.ahtv,
-        "tv.cctv.com" to R.raw.ahtv,
+        "tv.cctv.com" to R.raw.ahtv1,
+        "www.yangshipin.cn" to R.raw.ahtv1,
     )
+
+    private var finished = 0
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         mainActivity = activity as MainActivity
@@ -162,13 +164,9 @@ class WebFragment : Fragment() {
 
                 val uri = request?.url
 
-
                 tvModel?.tv?.block?.let {
                     for (i in it) {
-                        if (uri?.path?.contains(
-                                i
-                            ) == true
-                        ) {
+                        if (uri?.path?.contains(i) == true) {
                             Log.i(TAG, "block path ${uri.path}")
                             return WebResourceResponse("text/plain", "utf-8", null)
                         }
@@ -204,6 +202,7 @@ class WebFragment : Fragment() {
             }
 
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                Log.i(TAG, "onPageStarted $url")
 //                webView.evaluateJavascript(
 //                    context.resources.openRawResource(R.raw.prev)
 //                        .bufferedReader()
@@ -244,14 +243,28 @@ body * {
             }
 
             override fun onPageFinished(view: WebView?, url: String?) {
+                if (webView.progress < 100) {
+                    super.onPageFinished(view, url)
+                    return
+                }
+
+                finished++
+                if (finished < 1) {
+                    super.onPageFinished(view, url)
+                    return
+                }
+
+                Log.i(TAG, "onPageFinished $finished $url")
                 tvModel?.tv?.started?.let {
                     webView.evaluateJavascript(it, null)
+                    Log.i(TAG, "started")
                 }
 
                 super.onPageFinished(view, url)
 
                 tvModel?.tv?.script?.let {
                     webView.evaluateJavascript(it, null)
+                    Log.i(TAG, "script")
                 }
 
                 val uri = Uri.parse(url)
@@ -259,22 +272,22 @@ body * {
                 if (script == null) {
                     script = R.raw.ahtv
                 }
-                webView.evaluateJavascript(context.resources.openRawResource(script)
+                val s = context.resources.openRawResource(script)
                     .bufferedReader()
-                    .use { it.readText() }) { value ->
-                    if (value == "success") {
-                        Log.e(TAG, "success")
-                    }
-                }
+                    .use { it.readText() }
+
+                webView.evaluateJavascript(s, null)
+                Log.i(TAG, "default")
             }
         }
     }
 
     fun play(tvModel: TVModel) {
+        finished = 0
         this.tvModel = tvModel
         var url = tvModel.videoUrl.value as String
         Log.i(TAG, "play ${tvModel.tv.title} $url")
-//        url = "https://www.gdtv.cn/tvChannelDetail/43"
+//        url = "https://www.nmtv.cn/liveTv"
         webView.loadUrl(url)
     }
 

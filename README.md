@@ -45,7 +45,7 @@
 
 下載安裝 [releases](https://github.com/lizongying/my-tv-1/releases/)
 
-更多下載地址 [my-tv](https://lyrics.run/my-tv-1.html)
+更多下載地址 [my-tv-1](https://lyrics.run/my-tv-1.html)
 
 ![image](./screenshots/img.jpg)
 ![image](./screenshots/img1.jpg)

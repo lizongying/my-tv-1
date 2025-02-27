@@ -14,10 +14,6 @@
                     children[i].style.display = 'none';
                 }
 
-
-
-
-
                 const url = document.URL;
                 const a = url.split('#');
                 const items = body.querySelectorAll('.list_name');
