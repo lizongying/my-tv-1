@@ -67,7 +67,7 @@ class InfoFragment : Fragment() {
     }
 
     fun show(tvViewModel: TVModel) {
-        binding.title.text = tvViewModel.tv.title
+        binding.title.text = "${tvViewModel.tv.group} ${tvViewModel.tv.title}"
 
         when (tvViewModel.tv.title) {
             else -> {
@@ -78,7 +78,7 @@ class InfoFragment : Fragment() {
                     val canvas = Canvas(bitmap)
 
                     val paint = Paint().apply {
-                        color = ContextCompat.getColor(context!!, R.color.blur)
+                        color = ContextCompat.getColor(requireContext(), R.color.blur)
                         textSize = 100f
                         textAlign = Paint.Align.CENTER
                     }

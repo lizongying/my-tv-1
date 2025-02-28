@@ -1,12 +1,12 @@
 (() => {
     const body = document.body;
     body.style.position = 'fixed';
-    body.style.left = '100vw';
+    body.style.left = '100%';
     body.style.backgroundColor = '#000';
 
     let timeout = 0;
 
-    const videoStyle = (video) => {
+    const success = (video) => {
         video.attributes.autoplay = 'true';
         video.attributes.muted = 'false';
         video.attributes.controls = 'false';
@@ -17,23 +17,6 @@
         video.style.top = '0';
         video.style.left = '0';
         video.style.zIndex = '9999';
-        video.style.transform = 'translate(0, 0)';
-    };
-
-    const success = (video) => {
-        videoStyle(video);
-
-        setTimeout(() => {
-            videoStyle(video);
-        }, 10);
-
-        setTimeout(() => {
-            videoStyle(video);
-        }, 100);
-
-        setTimeout(() => {
-            videoStyle(video);
-        }, 1000);
 
         console.log('success');
         if (timeout > 0) {
@@ -41,29 +24,60 @@
         }
     };
 
-    const observerVideo = (box) => {
-        const video = box.querySelector('video');
-        if (video !== null) {
-            success(video);
+    const observerSelector = (selector, index) => {
+        let items = body.querySelectorAll(selector);
+        if (items.length > index) {
+            items[index].click();
             return null
         } else {
             const observer = new MutationObserver((_) => {
-                const video = box.querySelector('video');
-                if (video !== null) {
+                items = body.querySelectorAll(selector);
+                if (items.length > index) {
                     if (observer !== null) {
                         observer.disconnect();
                     }
-                    success(video);
+                    items[index].click();
                 }
             });
 
             observer.observe(body, {
                 childList: true,
+                subtree: true,
+                attributes: false,
+                characterData: false
+            });
+            return observer
+        }
+    };
+
+    const observerVideo = (box) => {
+        let video = box.querySelector('video');
+        if (video !== null) {
+            success(video);
+            return null
+        } else {
+            const observer = new MutationObserver((_) => {
+                video = box.querySelector('video');
+                if (video !== null) {
+                    if (observer !== null) {
+                        observer.disconnect();
+                    }
+
+                    setTimeout(() => {
+                        const arr = document.URL.split('#')
+                        observerSelector('.item', parseInt(arr[arr.length - 1]));
+                        success(box.querySelector('video'));
+                    }, 0);
+                }
+            });
+
+            observer.observe(box, {
+                childList: true,
                 subtree: true
             });
             return observer
         }
-    }
+    };
 
     const observer = observerVideo(body);
 

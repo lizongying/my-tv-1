@@ -14,6 +14,8 @@ data class TV(
     var headers: Map<String, String>? = null,
     var group: String = "",
     var block: List<String>,
+    var selector: String? = null,
+    var index: Int? = null,
 ) : Serializable {
 
     override fun toString(): String {

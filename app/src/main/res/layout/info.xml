@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
@@ -42,7 +43,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
                         android:gravity="start"
-                        android:textColor="#FFEEEEEE"
+                        android:textColor="@color/title_blur"
                         android:textSize="20sp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -53,7 +54,9 @@
                         android:layout_marginTop="8dp"
                         android:gravity="start"
                         android:singleLine="true"
-                        android:textColor="#B3EEEEEE"
+                        tools:text="精彩節目"
+                        android:visibility="gone"
+                        android:textColor="@color/description_blur"
                         android:textSize="14sp" />
                 </LinearLayout>
         </LinearLayout>

@@ -32,40 +32,41 @@ class WebFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val scriptMap = mapOf(
-        "live.kankanews.com" to R.raw.shtv,
-        "www.cbg.cn" to R.raw.ahtv,
+        "live.kankanews.com" to R.raw.ahtv1,
+        "www.cbg.cn" to R.raw.ahtv1,
         "www.sxrtv.com" to R.raw.sxrtv1,
-        "www.xjtvs.com.cn" to R.raw.xjtv,
-        "www.yb983.com" to R.raw.ahtv,
-        "www.yntv.cn" to R.raw.ahtv,
+        "www.xjtvs.com.cn" to R.raw.xjtv1,
+        "www.yb983.com" to R.raw.ahtv1,
+        "www.yntv.cn" to R.raw.ahtv1,
         "www.nmtv.cn" to R.raw.nmgtv1,
-//        "www.snrtv.com" to R.raw.ahtv,
-        "live.snrtv.com" to R.raw.ahtv,
-        "www.btzx.com.cn" to R.raw.ahtv,
-        "static.hntv.tv" to R.raw.ahtv,
-        "www.hljtv.com" to R.raw.ahtv,
-        "www.qhtb.cn" to R.raw.ahtv,
-        "www.qhbtv.com" to R.raw.ahtv,
-//        "v.iqilu.com" to R.raw.ahtv,
-        "www.jlntv.cn" to R.raw.ahtv,
-        "www.cztv.com" to R.raw.ahtv,
-        "www.gzstv.com" to R.raw.ahtv,
-        "www.jxntv.cn" to R.raw.jxtv,
-        "news.hbtv.com.cn" to R.raw.ahtv,
-        "www.hnntv.cn" to R.raw.ahtv,
-        "live.mgtv.com" to R.raw.ahtv,
-        "www.hebtv.com" to R.raw.ahtv,
-        "tc.hnntv.cn" to R.raw.ahtv,
-        "live.fjtv.net" to R.raw.ahtv,
-        "tv.gxtv.cn" to R.raw.ahtv,
-        "www.nxtv.com.cn" to R.raw.ahtv,
-//        "www.ahtv.cn" to R.raw.ahtv,
-        "news.hbtv.com.cn" to R.raw.ahtv,
-        "www.sztv.com.cn" to R.raw.ahtv,
-        "www.setv.sh.cn" to R.raw.gdtv,
-//        "www.gdtv.cn" to R.raw.ahtv,
+        "live.snrtv.com" to R.raw.ahtv1,
+        "www.btzx.com.cn" to R.raw.ahtv1,
+        "static.hntv.tv" to R.raw.ahtv1,
+        "www.hljtv.com" to R.raw.ahtv1,
+        "www.qhtb.cn" to R.raw.ahtv1,
+        "www.qhbtv.com" to R.raw.ahtv1,
+        "v.iqilu.com" to R.raw.ahtv1,
+        "www.jlntv.cn" to R.raw.ahtv1,
+        "www.cztv.com" to R.raw.ahtv1,
+        "www.gzstv.com" to R.raw.ahtv1,
+        "www.jxntv.cn" to R.raw.jxtv1,
+        "www.hnntv.cn" to R.raw.ahtv1,
+        "live.mgtv.com" to R.raw.ahtv1,
+        "www.hebtv.com" to R.raw.ahtv1,
+        "tc.hnntv.cn" to R.raw.ahtv1,
+        "live.fjtv.net" to R.raw.ahtv1,
+        "tv.gxtv.cn" to R.raw.ahtv1,
+        "www.nxtv.com.cn" to R.raw.ahtv1,
+        "www.ahtv.cn" to R.raw.ahtv1,
+        "news.hbtv.com.cn" to R.raw.ahtv1,
+        "www.sztv.com.cn" to R.raw.ahtv1,
+        "www.setv.sh.cn" to R.raw.ahtv1,
+        "www.gdtv.cn" to R.raw.ahtv1,
         "tv.cctv.com" to R.raw.ahtv1,
         "www.yangshipin.cn" to R.raw.ahtv1,
+        "www.brtn.cn" to R.raw.xjtv1,
+        "www.kangbatv.com" to R.raw.ahtv1,
+        "live.jstv.com" to R.raw.xjtv1,
     )
 
     private var finished = 0
@@ -160,8 +161,6 @@ class WebFragment : Fragment() {
                 view: WebView?,
                 request: WebResourceRequest?
             ): WebResourceResponse? {
-//                return null
-
                 val uri = request?.url
 
                 tvModel?.tv?.block?.let {
@@ -197,7 +196,7 @@ class WebFragment : Fragment() {
                     return null
                 }
 
-//                Log.i(TAG, "${request?.method} ${uri.toString()} ${request?.requestHeaders}")
+                Log.d(TAG, "${request?.method} ${uri.toString()} ${request?.requestHeaders}")
                 return null
             }
 
@@ -209,12 +208,23 @@ class WebFragment : Fragment() {
 //                        .use { it.readText().replace("{channel}", "$url") }, null
 //                )
 
-                val cssStyle = """
+                super.onPageStarted(view, url, favicon)
+
+                val jsCode = """
+(() => {
+    const style = document.createElement('style');
+    style.type = 'text/css';
+    style.innerHTML = `
 body {
-    body.style.display = 'none !important';
+    position: 'fixed';
+    left: '100%';
+    background-color: '#000';
 }
-body * {
-    font-size: 1px;
+img {
+    display: none;
+}
+* {
+    font-size: 0 !important;
     color: black !important;
     background-color: black !important;
     border-color: black !important;
@@ -223,23 +233,13 @@ body * {
     box-shadow: none !important;
     fill: black !important;
     stroke: black !important;
+    width: 0;
 }
-        """.trimIndent()
-
-                val jsCode = """
-(function() {
-    const style = document.createElement('style');
-    style.type = 'text/css';
-    style.innerHTML = `${cssStyle}`;
+    `;
     document.head.appendChild(style);
 })();
         """.trimIndent()
-
-//                webView.evaluateJavascript(
-//                    jsCode, null
-//                )
-
-                super.onPageStarted(view, url, favicon)
+                webView.evaluateJavascript(jsCode, null)
             }
 
             override fun onPageFinished(view: WebView?, url: String?) {
@@ -270,11 +270,25 @@ body * {
                 val uri = Uri.parse(url)
                 var script = scriptMap[uri.host]
                 if (script == null) {
-                    script = R.raw.ahtv
+                    script = R.raw.ahtv1
                 }
-                val s = context.resources.openRawResource(script)
+                var s = context.resources.openRawResource(script)
                     .bufferedReader()
                     .use { it.readText() }
+
+                tvModel?.tv?.id?.let {
+                    s = s.replace("{id}", "$it")
+                }
+
+                tvModel?.tv?.selector?.let {
+                    s = s.replace("{selector}", it)
+                }
+
+                tvModel?.tv?.index?.let {
+                    s = s.replace("{index}", "$it")
+                }
+
+                Log.d(TAG, "s: $s")
 
                 webView.evaluateJavascript(s, null)
                 Log.i(TAG, "default")
@@ -286,7 +300,7 @@ body * {
         finished = 0
         this.tvModel = tvModel
         var url = tvModel.videoUrl.value as String
-        Log.i(TAG, "play ${tvModel.tv.title} $url")
+        Log.i(TAG, "play ${tvModel.tv.id} ${tvModel.tv.title} $url")
 //        url = "https://www.nmtv.cn/liveTv"
         webView.loadUrl(url)
     }

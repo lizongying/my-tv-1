@@ -4,11 +4,9 @@
     body.style.left = '100%';
     body.style.backgroundColor = '#000';
 
-    let timeout = 0
+    let timeout = 0;
 
     const success = (video) => {
-        console.log('video find');
-
         video.attributes.autoplay = 'true';
         video.attributes.muted = 'false';
         video.attributes.controls = 'false';
@@ -19,6 +17,7 @@
         video.style.top = '0';
         video.style.left = '0';
         video.style.zIndex = '9999';
+        video.style.transform = 'translate(0, 0)';
 
         console.log('success');
         if (timeout > 0) {
@@ -30,11 +29,14 @@
         let items = body.querySelectorAll(selector);
         if (items.length > index) {
             items[index].click();
+            return null
         } else {
             const observer = new MutationObserver((_) => {
                 items = body.querySelectorAll(selector);
                 if (items.length > index) {
-                    observer.disconnect();
+                    if (observer !== null) {
+                        observer.disconnect();
+                    }
                     items[index].click();
                 }
             });
@@ -45,7 +47,6 @@
                 attributes: false,
                 characterData: false
             });
-
             return observer
         }
     };
@@ -54,11 +55,14 @@
         let video = box.querySelector('video');
         if (video !== null) {
             success(video);
+            return null
         } else {
             const observer = new MutationObserver((_) => {
                 video = box.querySelector('video');
                 if (video !== null) {
-                    observer.disconnect();
+                    if (observer !== null) {
+                        observer.disconnect();
+                    }
 
                     setTimeout(() => {
                         const arr = document.URL.split('#')
@@ -72,7 +76,6 @@
                 childList: true,
                 subtree: true
             });
-
             return observer
         }
     };
