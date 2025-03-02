@@ -20,6 +20,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.lizongying.mytv1.models.TVList
+import kotlin.math.abs
 
 
 class MainActivity : FragmentActivity() {
@@ -220,10 +221,27 @@ class MainActivity : FragmentActivity() {
         return super.onTouchEvent(event)
     }
 
-    private inner class GestureListener(private val context: Context) :
+    private inner class GestureListener(context: Context) :
         GestureDetector.SimpleOnGestureListener() {
 
-        private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        private var screenWidth = windowManager.defaultDisplay.width
+        private var screenHeight = windowManager.defaultDisplay.height
+        private val audioManager = context.getSystemService(AUDIO_SERVICE) as AudioManager
+
+        private var maxVolume = 0
+
+        init {
+            maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+        }
+
+        override fun onDown(e: MotionEvent): Boolean {
+            webFragment.hideVolumeNow()
+            return true
+        }
+
+        override fun onLongPress(e: MotionEvent) {
+            showFragment(menuFragment)
+        }
 
         override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
             showFragment(menuFragment)
@@ -241,16 +259,18 @@ class MainActivity : FragmentActivity() {
             velocityX: Float,
             velocityY: Float
         ): Boolean {
-            if ((e1?.x ?: 0f) > windowManager.defaultDisplay.width / 3
-                && (e1?.x ?: 0f) < windowManager.defaultDisplay.width * 2 / 3
-            ) {
+            val oldX = e1?.rawX ?: 0f
+            val oldY = e1?.rawY ?: 0f
+            val newX = e2.rawX
+            val newY = e2.rawY
+            if (oldX > screenWidth / 3 && oldX < screenWidth * 2 / 3 && abs(newX - oldX) < abs(newY - oldY)) {
                 if (velocityY > 0) {
-                    if (menuFragment.isHidden && settingFragment.isHidden) {
+                    if ((!menuFragment.isAdded || menuFragment.isHidden) && (!settingFragment.isAdded || settingFragment.isHidden)) {
                         prev()
                     }
                 }
                 if (velocityY < 0) {
-                    if (menuFragment.isHidden && settingFragment.isHidden) {
+                    if ((!menuFragment.isAdded || menuFragment.isHidden) && (!settingFragment.isAdded || settingFragment.isHidden)) {
                         next()
                     }
                 }
@@ -259,57 +279,84 @@ class MainActivity : FragmentActivity() {
             return super.onFling(e1, e2, velocityX, velocityY)
         }
 
-//        override fun onScroll(
-//            e1: MotionEvent?,
-//            e2: MotionEvent,
-//            distanceX: Float,
-//            distanceY: Float
-//        ): Boolean {
-//            val deltaY = e1?.y?.let { e2.y.minus(it) } ?: 0f
-//            val deltaX = e1?.x?.let { e2.x.minus(it) } ?: 0f
-//
-//            if (abs(deltaY) > abs(deltaX)) {
-//                if ((e1?.x ?: 0f) > windowManager.defaultDisplay.width * 2 / 3) {
-//                    adjustVolume(deltaY)
-//                }
-//            }
-//
-//            return super.onScroll(e1, e2, distanceX, distanceY)
-//        }
+        private var lastScrollTime: Long = 0
+        private var decayFactor: Float = 1.0f
 
-        private fun adjustVolume(deltaY: Float) {
-            val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-            val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-            val deltaVolume = deltaY / 1000 * maxVolume / windowManager.defaultDisplay.height
+        override fun onScroll(
+            e1: MotionEvent?,
+            e2: MotionEvent,
+            distanceX: Float,
+            distanceY: Float
+        ): Boolean {
+            val oldX = e1?.rawX ?: 0f
+            val oldY = e1?.rawY ?: 0f
+            val newX = e2.rawX
+            val newY = e2.rawY
 
-            var newVolume = currentVolume + deltaVolume
-            if (newVolume < 0) {
-                newVolume = 0F
-            } else if (newVolume > maxVolume) {
-                newVolume = maxVolume.toFloat()
+            if (oldX < screenWidth / 3) {
+                val currentTime = System.currentTimeMillis()
+                val deltaTime = currentTime - lastScrollTime
+                lastScrollTime = currentTime
+
+                decayFactor =
+                    0.01f.coerceAtLeast(decayFactor - 0.03f * deltaTime)
+                val delta =
+                    ((oldY - newY) * decayFactor * 0.2 / screenHeight).toFloat()
+                adjustBrightness(delta)
+                decayFactor = 1.0f
+                return super.onScroll(e1, e2, distanceX, distanceY)
             }
 
-            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, newVolume.toInt(), 0)
+            if (oldX > screenWidth * 2 / 3 && abs(distanceY) > abs(distanceX)) {
+                val currentTime = System.currentTimeMillis()
+                val deltaTime = currentTime - lastScrollTime
+                lastScrollTime = currentTime
 
-            // 可以添加一个toast来显示当前音量
-            Toast.makeText(context, "Volume: $newVolume / $maxVolume", Toast.LENGTH_SHORT).show()
+                decayFactor =
+                    0.01f.coerceAtLeast(decayFactor - 0.03f * deltaTime)
+                val delta =
+                    ((oldY - newY) * maxVolume * decayFactor * 0.2 / screenHeight).toInt()
+                adjustVolume(delta)
+                decayFactor = 1.0f
+                return super.onScroll(e1, e2, distanceX, distanceY)
+            }
+
+            return super.onScroll(e1, e2, distanceX, distanceY)
         }
 
-//        private fun changeBrightness(deltaBrightness: Float) {
-//            brightness += deltaBrightness
-//            if (brightness < 0) {
-//                brightness = 0f
-//            } else if (brightness > 1) {
-//                brightness = 1f
-//            }
-//
-//            val layoutParams = windowManager.attributes
-//            layoutParams.screenBrightness = brightness
-//            windowManager.attributes = layoutParams
-//
-//            // 可以添加一个toast来显示当前亮度
-//            Toast.makeText(context, "Brightness: $brightness", Toast.LENGTH_SHORT).show()
-//        }
+        private fun adjustVolume(deltaVolume: Int) {
+            val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+
+            var newVolume = currentVolume + deltaVolume
+
+            if (newVolume < 0) {
+                newVolume = 0
+            } else if (newVolume > maxVolume) {
+                newVolume = maxVolume
+            }
+
+            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, newVolume, 0)
+
+            webFragment.setVolumeMax(maxVolume * 100)
+            webFragment.setVolume(newVolume.toInt() * 100, true)
+            webFragment.showVolume(View.VISIBLE)
+        }
+
+        private fun adjustBrightness(deltaBrightness: Float) {
+            var brightness = window.attributes.screenBrightness
+
+            brightness += deltaBrightness
+            brightness = 0.1f.coerceAtLeast(0.9f.coerceAtMost(brightness))
+
+            val attributes = window.attributes.apply {
+                screenBrightness = brightness
+            }
+            window.attributes = attributes
+
+            webFragment.setVolumeMax(100)
+            webFragment.setVolume((brightness * 100).toInt())
+            webFragment.showVolume(View.VISIBLE)
+        }
     }
 
     fun onPlayEnd() {

@@ -4,6 +4,8 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.net.http.SslError
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +18,7 @@ import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.lizongying.mytv1.databinding.PlayerBinding
 import com.lizongying.mytv1.models.TVModel
@@ -30,6 +33,9 @@ class WebFragment : Fragment() {
 
     private var _binding: PlayerBinding? = null
     private val binding get() = _binding!!
+
+    private val handler = Handler(Looper.myLooper()!!)
+    private val delayHideVolume = 2 * 1000L
 
     private val scriptMap = mapOf(
         "live.kankanews.com" to R.raw.ahtv1,
@@ -105,14 +111,14 @@ class WebFragment : Fragment() {
         webView.isFocusable = false
         webView.isFocusableInTouchMode = false
 
+        webView.setOnTouchListener { v, event ->
+            if (event != null) {
+                (activity as MainActivity).gestureDetector.onTouchEvent(event)
+            }
+            true
+        }
+
 //        WebView.setWebContentsDebuggingEnabled(true)
-//
-//        webView.setOnTouchListener { v, event ->
-//            if (event != null) {
-//                (activity as MainActivity).gestureDetector.onTouchEvent(event)
-//            }
-//            true
-//        }
 
         (activity as MainActivity).ready(TAG)
         return binding.root
@@ -303,6 +309,46 @@ img {
         Log.i(TAG, "play ${tvModel.tv.id} ${tvModel.tv.title} $url")
 //        url = "https://www.nmtv.cn/liveTv"
         webView.loadUrl(url)
+    }
+
+    fun showVolume(visibility: Int) {
+        binding.icon.visibility = visibility
+        binding.volume.visibility = visibility
+        hideVolume()
+    }
+
+    fun setVolumeMax(volume: Int) {
+        binding.volume.max = volume
+    }
+
+    fun setVolume(progress: Int, volume: Boolean = false) {
+        val context = requireContext()
+        binding.volume.progress = progress
+        binding.icon.setImageDrawable(
+            ContextCompat.getDrawable(
+                context,
+                if (volume) {
+                    if (progress > 0) R.drawable.volume_up_24px else R.drawable.volume_off_24px
+                } else {
+                    R.drawable.light_mode_24px
+                }
+            )
+        )
+    }
+
+    fun hideVolume() {
+        handler.removeCallbacks(hideVolumeRunnable)
+        handler.postDelayed(hideVolumeRunnable, delayHideVolume)
+    }
+
+    fun hideVolumeNow() {
+        handler.removeCallbacks(hideVolumeRunnable)
+        handler.postDelayed(hideVolumeRunnable, 0)
+    }
+
+    private val hideVolumeRunnable = Runnable {
+        binding.icon.visibility = View.GONE
+        binding.volume.visibility = View.GONE
     }
 
     companion object {
