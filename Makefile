@@ -12,3 +12,6 @@ gen:
 
 channels:
 	gua64 -f -e files/channels.json -o app/src/main/res/raw/channels.txt
+
+channels2:
+	python files/pretty.py && gua64 -f -e files/channels2.json -o app/src/main/res/raw/channels.txt

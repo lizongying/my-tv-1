@@ -22,6 +22,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.lizongying.mytv1.databinding.PlayerBinding
 import com.lizongying.mytv1.models.TVModel
+import java.io.ByteArrayInputStream
 
 
 class WebFragment : Fragment() {
@@ -63,7 +64,7 @@ class WebFragment : Fragment() {
         "live.fjtv.net" to R.raw.ahtv1,
         "tv.gxtv.cn" to R.raw.ahtv1,
         "www.nxtv.com.cn" to R.raw.ahtv1,
-        "www.ahtv.cn" to R.raw.ahtv1,
+        "www.ahtv.cn" to R.raw.ahtv2,
         "news.hbtv.com.cn" to R.raw.ahtv1,
         "www.sztv.com.cn" to R.raw.ahtv1,
         "www.setv.sh.cn" to R.raw.ahtv1,
@@ -73,6 +74,35 @@ class WebFragment : Fragment() {
         "www.brtn.cn" to R.raw.xjtv1,
         "www.kangbatv.com" to R.raw.ahtv1,
         "live.jstv.com" to R.raw.xjtv1,
+        "www.wfcmw.cn" to R.raw.xjtv1,
+    )
+
+    private val blockMap = mapOf(
+        "央视甲" to listOf(
+            "jweixin",
+            "daohang",
+            "dianshibao.js",
+            "dingtalk.js",
+            "configtool",
+            "qrcode",
+            "shareindex.js",
+            "zhibo_shoucang.js",
+            "gray",
+            "cntv_Advertise.js",
+            "top2023newindex.js",
+            "indexPC.js",
+            "getEpgInfoByChannelNew",
+            "epglist",
+            "epginfo",
+            "getHandDataList",
+            "2019whitetop/index.js",
+            "pc_nav/index.js",
+            "shareindex.js",
+            "mapjs/index.js",
+            "bottomjs/index.js",
+            "top2023newindex.js",
+            "2019dlbhyjs/index.js"
+        ),
     )
 
     private var finished = 0
@@ -169,6 +199,17 @@ class WebFragment : Fragment() {
             ): WebResourceResponse? {
                 val uri = request?.url
 
+                Log.d(TAG, "${request?.method} ${uri.toString()} ${request?.requestHeaders}")
+
+                blockMap[tvModel?.tv?.group]?.let {
+                    for (i in it) {
+                        if (uri?.path?.contains(i) == true) {
+                            Log.i(TAG, "block path ${uri.path}")
+                            return WebResourceResponse("text/plain", "utf-8", null)
+                        }
+                    }
+                }
+
                 tvModel?.tv?.block?.let {
                     for (i in it) {
                         if (uri?.path?.contains(i) == true) {
@@ -176,6 +217,17 @@ class WebFragment : Fragment() {
                             return WebResourceResponse("text/plain", "utf-8", null)
                         }
                     }
+                }
+
+                if (uri?.path?.endsWith(
+                        ".css"
+                    ) == true
+                ) {
+                    return WebResourceResponse(
+                        "text/css",
+                        "utf-8",
+                        ByteArrayInputStream(ByteArray(0))
+                    )
                 }
 
                 if (request?.isForMainFrame == false && (uri?.path?.endsWith(".jpg") == true || uri?.path?.endsWith(
@@ -190,19 +242,13 @@ class WebFragment : Fragment() {
                         ".svg"
                     ) == true)
                 ) {
-                    return WebResourceResponse("text/plain", "utf-8", null)
+                    return WebResourceResponse(
+                        "image/png",
+                        "utf-8",
+                        ByteArrayInputStream(ByteArray(0))
+                    )
                 }
 
-                return null
-
-                if (uri?.path?.endsWith(
-                        ".css"
-                    ) == true
-                ) {
-                    return null
-                }
-
-                Log.d(TAG, "${request?.method} ${uri.toString()} ${request?.requestHeaders}")
                 return null
             }
 
